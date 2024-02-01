@@ -168,7 +168,7 @@ router.delete('/delete/:userId', authenticateJWT, async (req, res) => {
   }
 });
 
-// endpoint to access all the users except the logged in user and current friends
+// endpoint to access all the users except current friends
 
 router.get('/:userId', authenticateJWT, async (req, res) => {
   const loggedInUserId = req.params.userId;
@@ -180,7 +180,7 @@ router.get('/:userId', authenticateJWT, async (req, res) => {
 
     // Find all users who are neither the logged-in user nor their friends
     const users = await User.find({
-      _id: {$nin: [loggedInUserId, ...friends]},
+      _id: {$nin: friends},
     });
 
     res.status(200).json(users);

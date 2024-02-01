@@ -28,7 +28,7 @@ import API from '../config/API';
 import {Platform} from 'react-native';
 
 const ChatMessagesScreen = () => {
-  const {userId} = useContext(UserType);
+  const {userId, userName} = useContext(UserType);
   const [message, setMessage] = React.useState('');
   const [messages, setMessages] = React.useState([]);
   const route = useRoute();
@@ -63,7 +63,6 @@ const ChatMessagesScreen = () => {
       joinConversation(conversationId);
       isJoined.current = true; // Update the ref
     }
-
     // Clean up the effect when the component unmounts
     return () => {
       leaveConversation(conversationId);
@@ -103,6 +102,7 @@ const ChatMessagesScreen = () => {
         conversationId: conversationId,
         userId: {
           _id: userId,
+          name: userName,
         },
         text: message,
         timestamp: new Date().toISOString(),

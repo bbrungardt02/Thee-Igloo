@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import {StyleSheet, Text, View, ScrollView} from 'react-native';
 import React, {useLayoutEffect, useContext, useEffect} from 'react';
 import {useNavigation} from '@react-navigation/native';
@@ -10,7 +11,7 @@ import * as Keychain from 'react-native-keychain';
 
 const HomeScreen = () => {
   const navigation = useNavigation();
-  const {userId, setUserId} = useContext(UserType);
+  const {userId, setUserId, userName, setUserName} = useContext(UserType);
   const [users, setUsers] = React.useState([]);
 
   useLayoutEffect(() => {
@@ -56,6 +57,12 @@ const HomeScreen = () => {
         API.get(URL)
           .then(response => {
             setUsers(response.data);
+            const loggedInUser = response.data.find(
+              user => user._id === userId,
+            );
+            if (loggedInUser) {
+              setUserName(loggedInUser.name);
+            }
           })
           .catch(error => {
             console.log('error retrieving users', error);
@@ -70,9 +77,11 @@ const HomeScreen = () => {
     <View>
       <ScrollView>
         <View style={{padding: 10}}>
-          {users.map((item, index) => (
-            <User key={index} item={item} />
-          ))}
+          {users
+            .filter(user => user._id !== userId)
+            .map((item, index) => (
+              <User key={index} item={item} />
+            ))}
         </View>
       </ScrollView>
     </View>
