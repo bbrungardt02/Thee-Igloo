@@ -63,7 +63,7 @@ router.post('/register', async (req, res) => {
 
 // endpoint for logging in a user
 router.post('/login', async (req, res) => {
-  const {email, password} = req.body;
+  const {email, password, deviceToken} = req.body;
 
   // check if the email and password are provided
   if (!email || !password) {
@@ -84,6 +84,13 @@ router.post('/login', async (req, res) => {
       if (!match) {
         return res.status(401).json({message: 'Incorrect password!'});
       }
+
+      // Update the device token in the database
+      if (deviceToken) {
+        user.deviceTokens.addToSet(deviceToken);
+        await user.save();
+      }
+
       const accessToken = createToken(
         user._id,
         process.env.ACCESS_TOKEN_SECRET,

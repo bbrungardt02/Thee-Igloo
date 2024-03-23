@@ -12,7 +12,6 @@ let accessToken = null;
 export const baseURL =
   Platform.OS === 'android' ? 'http://10.0.2.2:8000' : 'http://localhost:8000';
 // SERVER_ADDRESS;
-
 // Create an Axios instance
 const API = axios.create({
   baseURL,

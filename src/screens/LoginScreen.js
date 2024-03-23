@@ -13,6 +13,7 @@ import {useNavigation} from '@react-navigation/native';
 import {connectSocket} from '../components/Socket';
 import * as Keychain from 'react-native-keychain';
 import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 let accessToken = null;
 
@@ -51,11 +52,21 @@ const LoginScreen = () => {
     checkLoginStatus();
   }, [navigation]);
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
+    // Get the device token
+    let deviceToken = null;
+    try {
+      deviceToken = await AsyncStorage.getItem('pushToken');
+    } catch (error) {
+      console.log('Error getting device token from AsyncStorage:', error);
+    }
+
     const user = {
       email: email,
       password: password,
+      deviceToken: deviceToken,
     };
+
     const URL = `${baseURL}/users/login`;
     axios
       .post(URL, user)

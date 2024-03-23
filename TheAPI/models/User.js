@@ -20,6 +20,11 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  deviceTokens: [
+    {
+      type: String,
+    },
+  ],
   friendRequests: [
     {
       type: mongoose.Schema.Types.ObjectId,

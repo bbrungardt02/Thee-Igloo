@@ -60,12 +60,12 @@ const ChatMessagesScreen = () => {
   useEffect(() => {
     if (!isJoined.current) {
       // Access the current value of the ref
-      joinConversation(conversationId);
+      joinConversation(conversationId, userId);
       isJoined.current = true; // Update the ref
     }
     // Clean up the effect when the component unmounts
     return () => {
-      leaveConversation(conversationId);
+      leaveConversation(conversationId, userId);
       isJoined.current = false; // Reset the ref
     };
   }, [conversationId]); // Remove isJoined from the dependency array
