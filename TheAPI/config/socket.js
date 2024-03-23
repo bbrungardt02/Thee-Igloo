@@ -19,7 +19,7 @@ const Message = require('../models/Message');
 const Conversation = require('../models/Conversation');
 
 const users = {};
-let conversationRooms = {}; // Mapping of conversation IDs to arrays of user IDs
+let conversationRooms = {};
 
 module.exports = function (io) {
   io.on('connection', socket => {
@@ -137,7 +137,6 @@ module.exports = function (io) {
         });
 
         io.to(conversationId).emit('message', newMessage);
-        //! I CANT WAIT TO SEE IF THIS WORKS!!!
         // Look up the conversation
         let conversation = await Conversation.findById(conversationId).populate(
           'participants',

@@ -5,6 +5,8 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import {useNavigation} from '@react-navigation/native';
 import {UserType} from '../../UserContext';
 import API from '../config/API';
+import {socket} from '../components/Socket';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const ProfileScreen = () => {
   const navigation = useNavigation();
@@ -24,6 +26,7 @@ const ProfileScreen = () => {
     };
 
     fetchFriends();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const logout = async () => {
@@ -36,6 +39,23 @@ const ProfileScreen = () => {
       {
         text: 'Confirm',
         onPress: async () => {
+          // Disconnect the user from the socket
+          if (socket) {
+            socket.disconnect();
+          }
+
+          // Get the device token
+          let deviceToken = null;
+          try {
+            deviceToken = await AsyncStorage.getItem('pushToken');
+          } catch (error) {
+            console.log('Error getting device token from AsyncStorage:', error);
+          }
+
+          // Send a request to the logout endpoint with the device token
+          const URL = '/users/logout';
+          API.post(URL, {deviceToken});
+
           // Clear user credentials from Keychain
           await Keychain.resetGenericPassword();
           navigation.reset({
@@ -53,6 +73,7 @@ const ProfileScreen = () => {
         <MaterialIcons onPress={logout} name="logout" size={24} color="black" />
       ),
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const renderFriend = ({item}) => (

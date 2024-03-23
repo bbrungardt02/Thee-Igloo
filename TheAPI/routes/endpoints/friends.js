@@ -3,14 +3,30 @@ const router = express.Router();
 const {authenticateJWT} = require('../auth');
 const User = require('../../models/User');
 
+require('dotenv').config();
+const apn = require('apn');
+
+// APNs settings
+let apnOptions = {
+  token: {
+    key: process.env.APN_KEY_PATH,
+    keyId: process.env.APN_KEY_ID,
+    teamId: process.env.APN_TEAM_ID,
+  },
+  production: false,
+};
+
+let apnProvider = new apn.Provider(apnOptions);
+
 // endpoint to send a request to a user
 
 router.post('/request', authenticateJWT, async (req, res) => {
   const {currentUserId, selectedUserId} = req.body;
 
   try {
-    // get the recipient's data
+    // get the recipient's and sender's data
     const recipient = await User.findById(selectedUserId);
+    const sender = await User.findById(currentUserId);
 
     // check if a friend request from the current user already exists
     if (recipient.friendRequests.includes(currentUserId)) {
@@ -27,6 +43,27 @@ router.post('/request', authenticateJWT, async (req, res) => {
       },
       {new: true},
     );
+
+    // Emit a 'friendRequest' event to the recipient's socket
+    req.io.to(selectedUserId).emit('friendRequest', {from: currentUserId});
+
+    // Create a new notification
+    let note = new apn.Notification();
+    note.topic = 'org.reactjs.native.example.TheeIgloo';
+    note.alert = {
+      title: `${sender.name}`,
+      body: 'Has sent a friend request!',
+    };
+    note.sound = 'default';
+
+    // Send a notification to each device token of the recipient
+    for (let deviceToken of recipient.deviceTokens) {
+      apnProvider.send(note, deviceToken).then(result => {
+        if (result.failed.length > 0) {
+          console.log(result.failed);
+        }
+      });
+    }
 
     // update the sender's sentFriendRequests array
     await User.findByIdAndUpdate(
@@ -113,6 +150,27 @@ router.post('/accept', authenticateJWT, async (req, res) => {
     await sender.save();
     await recipient.save();
 
+    // Emit a 'friendRequestAccepted' event to the sender's socket
+    req.io.to(senderId).emit('friendRequestAccepted', {from: recipientId});
+
+    // Create a new notification
+    let note = new apn.Notification();
+    note.topic = 'org.reactjs.native.example.TheeIgloo';
+    note.alert = {
+      title: `${recipient.name}`,
+      body: 'Accepted your friend request!',
+    };
+    note.sound = 'default';
+
+    // Send a notification to each device token of the sender
+    for (let deviceToken of sender.deviceTokens) {
+      apnProvider.send(note, deviceToken).then(result => {
+        if (result.failed.length > 0) {
+          console.log(result.failed);
+        }
+      });
+    }
+
     res.status(200).json({message: 'Friend request accepted successfully!'});
   } catch (error) {
     console.log('Error accepting friend request: ', error);
@@ -120,7 +178,7 @@ router.post('/accept', authenticateJWT, async (req, res) => {
   }
 });
 
-// endpoint to reject a friend request //! not used in front end yet
+// endpoint to reject a friend request
 
 router.post('/reject', authenticateJWT, async (req, res) => {
   try {
@@ -142,6 +200,27 @@ router.post('/reject', authenticateJWT, async (req, res) => {
 
     await sender.save();
     await recipient.save();
+
+    // Emit a 'friendRequestRejected' event to the sender's socket
+    req.io.to(senderId).emit('friendRequestRejected', {from: recipientId});
+
+    // Create a new notification
+    let note = new apn.Notification();
+    note.topic = 'org.reactjs.native.example.TheeIgloo';
+    note.alert = {
+      title: `${recipient.name}`,
+      body: 'Rejected your friend request 😱',
+    };
+    note.sound = 'default';
+
+    // Send a notification to each device token of the sender
+    for (let deviceToken of sender.deviceTokens) {
+      apnProvider.send(note, deviceToken).then(result => {
+        if (result.failed.length > 0) {
+          console.log(result.failed);
+        }
+      });
+    }
 
     res.status(200).json({message: 'Friend request rejected successfully!'});
   } catch (error) {

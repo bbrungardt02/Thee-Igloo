@@ -69,9 +69,11 @@ router.post('/login', async (req, res) => {
   if (!email || !password) {
     return res.status(400).json({message: 'Email and password are required!'});
   }
+  // Convert the email to lowercase. This is done to ensure that the email is case-insensitive
+  const lowerCaseEmail = email.toLowerCase();
 
   // check if the user exists in the database
-  User.findOne({email})
+  User.findOne({email: {$regex: new RegExp('^' + lowerCaseEmail + '$', 'i')}})
     .then(async user => {
       if (!user) {
         // user not found
@@ -113,14 +115,21 @@ router.post('/login', async (req, res) => {
 
 router.post('/logout', authenticateJWT, (req, res) => {
   const userId = req.user.userId;
+  const {deviceToken} = req.body;
 
-  // Invalidate the refresh token for the user
-  // This could involve deleting it from the database, or wherever you're storing it
-  // This is a placeholder and should be replaced with your actual implementation
-  // eslint-disable-next-line no-undef
-  invalidateRefreshToken(userId);
-
-  res.sendStatus(204);
+  // Remove the device token from the user's deviceTokens array in the database
+  if (deviceToken) {
+    User.updateOne({_id: userId}, {$pull: {deviceTokens: deviceToken}})
+      .then(() => {
+        res.sendStatus(204);
+      })
+      .catch(err => {
+        console.log('Error logging out user: ', err);
+        res.status(500).json({message: 'Failed to log out the user!'});
+      });
+  } else {
+    res.sendStatus(204);
+  }
 });
 
 // Endpoint to update user details //! not used in front end yet
