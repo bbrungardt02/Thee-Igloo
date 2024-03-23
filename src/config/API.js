@@ -10,8 +10,8 @@ let accessToken = null;
 // Switch out baseURL with SERVER_ADDRESS below for connection to EC2 instance
 
 export const baseURL =
-  Platform.OS === 'android' ? 'http://10.0.2.2:8000' : 'http://localhost:8000';
-// SERVER_ADDRESS;
+  // Platform.OS === 'android' ? 'http://10.0.2.2:8000' : 'http://localhost:8000';
+  SERVER_ADDRESS;
 // Create an Axios instance
 const API = axios.create({
   baseURL,
