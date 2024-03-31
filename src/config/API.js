@@ -2,7 +2,6 @@ import axios from 'axios';
 import * as Keychain from 'react-native-keychain';
 import {SERVER_ADDRESS} from '@env';
 import {Alert} from 'react-native';
-import {Platform} from 'react-native';
 
 let accessToken = null;
 
@@ -15,7 +14,6 @@ export const baseURL =
 // Create an Axios instance
 const API = axios.create({
   baseURL,
-  // baseURL: SERVER_ADDRESS,
 });
 
 // Add a request interceptor

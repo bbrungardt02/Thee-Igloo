@@ -1,4 +1,12 @@
-import {StyleSheet, Text, View, FlatList, Image, Alert} from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  View,
+  FlatList,
+  Image,
+  Alert,
+  TouchableOpacity,
+} from 'react-native';
 import React, {useEffect, useLayoutEffect, useContext} from 'react';
 import * as Keychain from 'react-native-keychain';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
@@ -67,6 +75,43 @@ const ProfileScreen = () => {
     ]);
   };
 
+  const deleteAccount = async userId => {
+    Alert.alert('PERMANENTLY DELETE ACCOUNT', 'Are you sure?', [
+      {
+        text: 'Cancel',
+        onPress: () => console.log('Cancel Pressed'),
+        style: 'cancel',
+      },
+      {
+        text: 'Confirm',
+        onPress: async () => {
+          try {
+            // Disconnect the user from the socket
+            if (socket) {
+              socket.disconnect();
+            }
+
+            // Send a request to the delete endpoint
+            const response = await API.delete(`/users/delete/${userId}`);
+            if (response.status !== 200) {
+              throw new Error('Error deleting account');
+            }
+
+            // Clear user credentials from Keychain
+            await Keychain.resetGenericPassword();
+
+            navigation.reset({
+              index: 0,
+              routes: [{name: 'Login'}],
+            });
+          } catch (error) {
+            Alert.alert('Error', 'Error deleting account');
+          }
+        },
+      },
+    ]);
+  };
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
@@ -102,6 +147,11 @@ const ProfileScreen = () => {
           </Text>
         </View>
       )}
+      <TouchableOpacity
+        style={styles.deleteButton}
+        onPress={() => deleteAccount(userId)}>
+        <Text style={styles.deleteButtonText}>Delete Account</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -148,5 +198,17 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: 'gray',
     marginTop: 10,
+  },
+  deleteButton: {
+    backgroundColor: '#ff0000',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+    marginTop: 10,
+    alignSelf: 'center',
+  },
+  deleteButtonText: {
+    color: '#ffffff',
+    fontWeight: 'bold',
   },
 });

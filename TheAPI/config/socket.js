@@ -10,7 +10,7 @@ let apnOptions = {
     keyId: process.env.APN_KEY_ID,
     teamId: process.env.APN_TEAM_ID,
   },
-  production: true,
+  production: false,
 };
 
 let apnProvider = new apn.Provider(apnOptions);

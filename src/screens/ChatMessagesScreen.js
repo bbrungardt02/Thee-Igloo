@@ -314,7 +314,7 @@ const ChatMessagesScreen = () => {
       </ScrollView>
 
       {/* Image to be sent */}
-      {selectedImage ? (
+      {/* {selectedImage ? (
         <View style={{alignItems: 'center', margin: 10}}>
           <Image
             source={{uri: selectedImage}}
@@ -325,7 +325,7 @@ const ChatMessagesScreen = () => {
             <Text>Remove Image</Text>
           </Pressable>
         </View>
-      ) : null}
+      ) : null} */}
 
       <SafeAreaView>
         <View

@@ -3,6 +3,8 @@ const router = express.Router();
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
 const User = require('../../models/User');
+const Message = require('../../models/Message');
+const Conversation = require('../../models/Conversation');
 const {authenticateJWT, createToken} = require('../auth');
 const jwt = require('jsonwebtoken');
 
@@ -165,7 +167,7 @@ router.put('/update/:userId', authenticateJWT, async (req, res) => {
   }
 });
 
-// Endpoint to delete your account //! not used in front end yet
+// Endpoint to delete your account
 
 router.delete('/delete/:userId', authenticateJWT, async (req, res) => {
   const userId = req.params.userId;
@@ -176,7 +178,25 @@ router.delete('/delete/:userId', authenticateJWT, async (req, res) => {
       return res.status(404).json({message: 'User not found'});
     }
 
-    await user.remove();
+    await Message.deleteMany({userId: userId});
+
+    await Conversation.updateMany(
+      {},
+      {$pull: {participants: userId, messages: {$in: user.messages}}},
+    );
+
+    await User.updateMany(
+      {},
+      {
+        $pull: {
+          friends: userId,
+          sentFriendRequests: userId,
+          friendRequests: userId,
+        },
+      },
+    );
+
+    await user.deleteOne();
 
     res.json({message: 'User deleted successfully'});
   } catch (error) {
