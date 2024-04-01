@@ -122,15 +122,15 @@ const ProfileScreen = () => {
         setFriends(friends.filter(friend => friend._id !== friendId));
         Toast.show({
           type: 'success',
-          text1: 'Friend removed successfully',
+          text1: 'Friend removed & blocked successfully',
         });
       } else {
-        throw new Error('Error removing friend');
+        throw new Error('Error removing & blocking friend');
       }
     } catch (error) {
       Toast.show({
         type: 'error',
-        text1: 'Error removing friend',
+        text1: 'Error removing & blocking friend',
       });
     }
   };
@@ -154,13 +154,13 @@ const ProfileScreen = () => {
   const renderFriend = ({item}) => (
     <TouchableOpacity
       onPress={() =>
-        Alert.alert('Remove Friend', 'Are you sure?', [
+        Alert.alert('Block Friend', 'Are you sure? This may remove messages.', [
           {
             text: 'Cancel',
             style: 'cancel',
           },
           {
-            text: 'Remove',
+            text: 'Block',
             onPress: () => removeFriend(item._id),
             style: 'destructive',
           },
@@ -192,11 +192,7 @@ const ProfileScreen = () => {
           </Text>
         </View>
       )}
-      {/* <TouchableOpacity
-        style={styles.reportButton}
-        onPress={() => navigation.navigate('Report')}>
-        <Text style={styles.reportButtonText}>Report Issue</Text>
-      </TouchableOpacity> */}
+
       <Button title="Report Issue" onPress={sendEmail} />
 
       <TouchableOpacity
@@ -263,16 +259,4 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     fontWeight: 'bold',
   },
-  // reportButton: {
-  //   backgroundColor: '#D3D3D3',
-  //   paddingVertical: 10,
-  //   paddingHorizontal: 20,
-  //   borderRadius: 5,
-  //   marginTop: 10,
-  //   alignSelf: 'center',
-  // },
-  // reportButtonText: {
-  //   color: '#000000',
-  //   fontWeight: 'normal',
-  // },
 });

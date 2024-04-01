@@ -10,7 +10,6 @@ import ChatsScreen from './src/screens/ChatsScreen';
 import ChatMessagesScreen from './src/screens/ChatMessagesScreen';
 import NewChatScreen from './src/screens/NewChatScreen';
 import ProfileScreen from './src/screens/ProfileScreen';
-import ReportScreen from './src/screens/ReportScreen';
 
 const StackNavigator = () => {
   const Stack = createNativeStackNavigator();
@@ -45,8 +44,6 @@ const StackNavigator = () => {
         <Stack.Screen name="Messages" component={ChatMessagesScreen} />
 
         <Stack.Screen name="Profile" component={ProfileScreen} />
-
-        <Stack.Screen name="Report" component={ReportScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
