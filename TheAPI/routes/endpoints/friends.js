@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const {authenticateJWT} = require('../auth');
 const User = require('../../models/User');
+const Conversation = require('../../models/Conversation');
+const Message = require('../../models/Message');
 
 require('dotenv').config();
 const apn = require('apn');
@@ -243,6 +245,68 @@ router.get('/:userId', authenticateJWT, async (req, res) => {
   } catch (error) {
     console.log('Error getting friends: ', error);
     res.status(500).json({message: 'Failed to get friends!'});
+  }
+});
+
+// endpoint to remove a friend
+
+router.delete('/:userId/:friendId', authenticateJWT, async (req, res) => {
+  const {userId, friendId} = req.params;
+
+  try {
+    const user = await User.findById(userId);
+    const friend = await User.findById(friendId);
+
+    if (!user || !friend) {
+      return res.status(404).json({message: 'User or friend not found!'});
+    }
+
+    // Find all conversations where both users are participants
+    const conversations = await Conversation.find({
+      participants: {$all: [userId, friendId]},
+    });
+
+    for (let conversation of conversations) {
+      // Find all messages in the conversation sent by the user or the friend
+      const messagesToDelete = await Message.find({
+        _id: {$in: conversation.messages},
+        userId: {$in: [userId, friendId]},
+      });
+
+      // Delete these messages
+      await Message.deleteMany({
+        _id: {$in: messagesToDelete.map(message => message._id)},
+      });
+
+      // Update the messages array of the conversation to remove the IDs of the deleted messages
+      conversation.messages = conversation.messages.filter(
+        messageId =>
+          !messagesToDelete.find(message => message._id.equals(messageId)),
+      );
+
+      // Update the participants array of the conversation to remove the IDs of the user and the friend
+      conversation.participants = conversation.participants.filter(
+        participantId => ![userId, friendId].includes(participantId.toString()),
+      );
+
+      await Conversation.findByIdAndUpdate(conversation._id, {
+        messages: conversation.messages,
+        participants: conversation.participants,
+      });
+    }
+
+    // Remove friend from user's friends list
+    user.friends = user.friends.filter(id => id.toString() !== friendId);
+    await User.findByIdAndUpdate(userId, {friends: user.friends});
+
+    // Remove user from friend's friends list
+    friend.friends = friend.friends.filter(id => id.toString() !== userId);
+    await User.findByIdAndUpdate(friendId, {friends: friend.friends});
+
+    res.status(200).json({message: 'Friend removed successfully!'});
+  } catch (error) {
+    console.log('Error removing friend: ', error);
+    res.status(500).json({message: 'Failed to remove friend!'});
   }
 });
 

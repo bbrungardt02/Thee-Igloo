@@ -6,6 +6,7 @@ import {
   Image,
   Alert,
   TouchableOpacity,
+  Button,
 } from 'react-native';
 import React, {useEffect, useLayoutEffect, useContext} from 'react';
 import * as Keychain from 'react-native-keychain';
@@ -15,6 +16,8 @@ import {UserType} from '../../UserContext';
 import API from '../config/API';
 import {socket} from '../components/Socket';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {openComposer} from 'react-native-email-link';
+import Toast from 'react-native-toast-message';
 
 const ProfileScreen = () => {
   const navigation = useNavigation();
@@ -112,6 +115,26 @@ const ProfileScreen = () => {
     ]);
   };
 
+  const removeFriend = async friendId => {
+    try {
+      const response = await API.delete(`/friends/${userId}/${friendId}`);
+      if (response.status === 200) {
+        setFriends(friends.filter(friend => friend._id !== friendId));
+        Toast.show({
+          type: 'success',
+          text1: 'Friend removed successfully',
+        });
+      } else {
+        throw new Error('Error removing friend');
+      }
+    } catch (error) {
+      Toast.show({
+        type: 'error',
+        text1: 'Error removing friend',
+      });
+    }
+  };
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
@@ -121,13 +144,35 @@ const ProfileScreen = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const sendEmail = () => {
+    openComposer({
+      to: 'bbrungardt5@gmail.com',
+      body: 'Describe your issue here',
+    });
+  };
+
   const renderFriend = ({item}) => (
-    <View style={styles.friendContainer}>
-      <Image source={{uri: item.image}} style={styles.friendImage} />
-      <View style={styles.friendInfo}>
-        <Text style={styles.friendName}>{item.name}</Text>
+    <TouchableOpacity
+      onPress={() =>
+        Alert.alert('Remove Friend', 'Are you sure?', [
+          {
+            text: 'Cancel',
+            style: 'cancel',
+          },
+          {
+            text: 'Remove',
+            onPress: () => removeFriend(item._id),
+            style: 'destructive',
+          },
+        ])
+      }>
+      <View style={styles.friendContainer}>
+        <Image source={{uri: item.image}} style={styles.friendImage} />
+        <View style={styles.friendInfo}>
+          <Text style={styles.friendName}>{item.name}</Text>
+        </View>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 
   return (
@@ -147,6 +192,13 @@ const ProfileScreen = () => {
           </Text>
         </View>
       )}
+      {/* <TouchableOpacity
+        style={styles.reportButton}
+        onPress={() => navigation.navigate('Report')}>
+        <Text style={styles.reportButtonText}>Report Issue</Text>
+      </TouchableOpacity> */}
+      <Button title="Report Issue" onPress={sendEmail} />
+
       <TouchableOpacity
         style={styles.deleteButton}
         onPress={() => deleteAccount(userId)}>
@@ -211,4 +263,16 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     fontWeight: 'bold',
   },
+  // reportButton: {
+  //   backgroundColor: '#D3D3D3',
+  //   paddingVertical: 10,
+  //   paddingHorizontal: 20,
+  //   borderRadius: 5,
+  //   marginTop: 10,
+  //   alignSelf: 'center',
+  // },
+  // reportButtonText: {
+  //   color: '#000000',
+  //   fontWeight: 'normal',
+  // },
 });
