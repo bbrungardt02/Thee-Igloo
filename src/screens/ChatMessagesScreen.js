@@ -12,8 +12,8 @@ import {
 } from 'react-native';
 import React, {useContext, useEffect, useLayoutEffect, useRef} from 'react';
 import {UserType} from '../../UserContext';
-import Entypo from 'react-native-vector-icons/Entypo';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
+// import Entypo from 'react-native-vector-icons/Entypo';
+// import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import IonIcons from 'react-native-vector-icons/Ionicons';
 import {useRoute} from '@react-navigation/native';
 import {useNavigation} from '@react-navigation/native';
@@ -33,7 +33,7 @@ const ChatMessagesScreen = () => {
   const [messages, setMessages] = React.useState([]);
   const route = useRoute();
   const {conversationId} = route.params;
-  const [selectedImage, setSelectedImage] = React.useState('');
+  // const [selectedImage, setSelectedImage] = React.useState('');
   const navigation = useNavigation();
   const [recipientsData, setRecipientsData] = React.useState([]);
   const isJoined = React.useRef(false);
@@ -364,7 +364,7 @@ const ChatMessagesScreen = () => {
               size={24}
               color="gray"
             /> */}
-            <Entypo name="mic" size={24} color="gray" />
+            {/* <Entypo name="mic" size={24} color="gray" /> */}
           </View>
 
           <Pressable

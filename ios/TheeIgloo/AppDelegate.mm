@@ -10,7 +10,7 @@
 {
   self.moduleName = @"TheeIgloo";
   self.initialProps = @{};
-
+  
   // Define UNUserNotificationCenter
   UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
   center.delegate = self;
