@@ -7,6 +7,7 @@ import {
   Alert,
   TouchableOpacity,
   Button,
+  ScrollView,
 } from 'react-native';
 import React, {useEffect, useLayoutEffect, useContext} from 'react';
 import * as Keychain from 'react-native-keychain';
@@ -176,13 +177,14 @@ const ProfileScreen = () => {
   );
 
   return (
-    <View style={{padding: 10, marginHorizontal: 12}}>
+    <ScrollView style={{flex: 1, padding: 10, marginHorizontal: 12}}>
       <Text style={styles.friendsHeader}>Friends</Text>
       {friends.length > 0 ? (
         <FlatList
           data={friends}
           renderItem={renderFriend}
           keyExtractor={(item, index) => item._id + index}
+          scrollEnabled={false}
         />
       ) : (
         <View style={styles.noFriendsContainer}>
@@ -200,7 +202,7 @@ const ProfileScreen = () => {
         onPress={() => deleteAccount(userId)}>
         <Text style={styles.deleteButtonText}>Delete Account</Text>
       </TouchableOpacity>
-    </View>
+    </ScrollView>
   );
 };
 
@@ -253,6 +255,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     borderRadius: 5,
     marginTop: 10,
+    marginBottom: 200,
     alignSelf: 'center',
   },
   deleteButtonText: {
