@@ -1,5 +1,4 @@
 import {
-  StyleSheet,
   Text,
   View,
   Button,
@@ -8,7 +7,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import React, {useEffect, useContext} from 'react';
-import {useNavigation} from '@react-navigation/native';
+import {useNavigation, useTheme} from '@react-navigation/native';
 import API from '../config/API';
 import {UserType} from '../../UserContext';
 import MultiSelect from 'react-native-multiple-select';
@@ -23,6 +22,7 @@ const NewChatScreen = () => {
   const [groupName, setGroupName] = React.useState('');
   const [isModalVisible, setModalVisible] = React.useState(false);
   const [isSubmitted, setIsSubmitted] = React.useState(false);
+  const {colors} = useTheme();
 
   const onSelectedItemsChange = selectedItems => {
     setSelectedFriends(selectedItems);
@@ -56,7 +56,7 @@ const NewChatScreen = () => {
     }
 
     try {
-      const response = await API.post(`/chats/conversation`, {
+      const response = await API.post('/chats/conversation', {
         senderId: userId,
         recipientIds: selectedFriends,
         name: groupName,
@@ -103,6 +103,7 @@ const NewChatScreen = () => {
       }
     };
     friendsList();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -114,6 +115,7 @@ const NewChatScreen = () => {
           items={friends}
           uniqueKey="_id"
           ref={component => {
+            // eslint-disable-next-line no-undef
             multiSelect = component;
           }}
           onSelectedItemsChange={onSelectedItemsChange}
@@ -148,7 +150,13 @@ const NewChatScreen = () => {
 
       <TouchableOpacity onPress={() => onSubmit()}>
         {groupName ? (
-          <Text style={{padding: 10, fontSize: 20, textAlign: 'center'}}>
+          <Text
+            style={{
+              padding: 10,
+              fontSize: 20,
+              textAlign: 'center',
+              color: colors.text,
+            }}>
             {groupName}
           </Text>
         ) : null}
@@ -209,5 +217,3 @@ const NewChatScreen = () => {
 };
 
 export default NewChatScreen;
-
-const styles = StyleSheet.create({});

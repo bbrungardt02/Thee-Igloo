@@ -3,10 +3,12 @@ import React, {useEffect, useContext} from 'react';
 import {UserType} from '../../UserContext';
 import FriendRequests from '../components/FriendRequests';
 import API from '../config/API';
+import {useTheme} from '@react-navigation/native';
 
 const FriendsScreen = () => {
   const {userId, setUserId} = useContext(UserType);
   const [friendRequests, setFriendRequests] = React.useState([]);
+  const {colors} = useTheme();
 
   useEffect(() => {
     const fetchFriendRequests = async () => {
@@ -27,13 +29,14 @@ const FriendsScreen = () => {
     };
 
     fetchFriendRequests();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
     <View style={{padding: 10, marginHorizontal: 12}}>
       {friendRequests.length > 0 ? (
         <>
-          <Text>Friend Requests</Text>
+          <Text style={{color: colors.text}}>Friend Requests</Text>
           {friendRequests.map((item, index) => (
             <FriendRequests
               key={index}
@@ -45,8 +48,10 @@ const FriendsScreen = () => {
         </>
       ) : (
         <View style={styles.noRequestsContainer}>
-          <Text style={styles.noRequestsText}>No Friend Requests</Text>
-          <Text style={styles.noRequestsSubText}>
+          <Text style={[styles.noRequestsText, {color: colors.text}]}>
+            No Friend Requests
+          </Text>
+          <Text style={[styles.noRequestsSubText, {color: colors.text}]}>
             When you have friend requests, you'll see them here.
           </Text>
         </View>

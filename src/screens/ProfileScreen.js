@@ -12,7 +12,7 @@ import {
 import React, {useEffect, useLayoutEffect, useContext} from 'react';
 import * as Keychain from 'react-native-keychain';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import {useNavigation} from '@react-navigation/native';
+import {useNavigation, useTheme} from '@react-navigation/native';
 import {UserType} from '../../UserContext';
 import API from '../config/API';
 import {socket} from '../components/Socket';
@@ -24,6 +24,7 @@ const ProfileScreen = () => {
   const navigation = useNavigation();
   const {userId, setUserId} = useContext(UserType);
   const [friends, setFriends] = React.useState([]);
+  const {colors} = useTheme();
 
   useEffect(() => {
     const fetchFriends = async () => {
@@ -139,7 +140,12 @@ const ProfileScreen = () => {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        <MaterialIcons onPress={logout} name="logout" size={24} color="black" />
+        <MaterialIcons
+          onPress={logout}
+          name="logout"
+          size={24}
+          color={colors.text}
+        />
       ),
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -178,7 +184,7 @@ const ProfileScreen = () => {
 
   return (
     <ScrollView style={{flex: 1, padding: 10, marginHorizontal: 12}}>
-      <Text style={styles.friendsHeader}>Friends</Text>
+      <Text style={[styles.friendsHeader, {color: colors.text}]}>Friends</Text>
       {friends.length > 0 ? (
         <FlatList
           data={friends}
@@ -188,8 +194,10 @@ const ProfileScreen = () => {
         />
       ) : (
         <View style={styles.noFriendsContainer}>
-          <Text style={styles.noFriendsText}>You have no friends</Text>
-          <Text style={styles.noFriendsSubText}>
+          <Text style={[styles.noFriendsText, {color: colors.text}]}>
+            You have no friends
+          </Text>
+          <Text style={[styles.noFriendsSubText, {color: colors.text}]}>
             Go find them, they'll appear here.
           </Text>
         </View>
@@ -225,7 +233,6 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 10,
-    color: '#000',
   },
   friendImage: {
     width: 50,

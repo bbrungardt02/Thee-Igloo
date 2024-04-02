@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import {StyleSheet, Text, View, ScrollView} from 'react-native';
 import React, {useLayoutEffect, useContext, useEffect} from 'react';
-import {useNavigation} from '@react-navigation/native';
+import {useNavigation, useTheme} from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import {UserType} from '../../UserContext';
@@ -13,6 +13,7 @@ const HomeScreen = () => {
   const navigation = useNavigation();
   const {userId, setUserId, userName, setUserName} = useContext(UserType);
   const [users, setUsers] = React.useState([]);
+  const {colors} = useTheme();
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -21,12 +22,14 @@ const HomeScreen = () => {
           onPress={() => navigation.navigate('Profile')}
           name="person-outline"
           size={24}
-          color="black"
+          color={colors.text}
           style={{marginLeft: 10}}
         />
       ),
       headerTitle: () => (
-        <Text style={{fontSize: 16, fontWeight: 'bold'}}>Igloo Chat</Text>
+        <Text style={{fontSize: 16, fontWeight: 'bold', color: colors.text}}>
+          Igloo Chat
+        </Text>
       ),
       headerRight: () => (
         <View style={{flexDirection: 'row', alignItems: 'center', gap: 8}}>
@@ -34,13 +37,13 @@ const HomeScreen = () => {
             onPress={() => navigation.navigate('Chats')}
             name="chatbox-ellipses-outline"
             size={24}
-            color="black"
+            color={colors.text}
           />
           <MaterialIcons
             onPress={() => navigation.navigate('Friend Requests')}
             name="people-outline"
             size={24}
-            color="black"
+            color={colors.text}
           />
         </View>
       ),

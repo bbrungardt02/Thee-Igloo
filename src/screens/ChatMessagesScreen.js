@@ -16,7 +16,7 @@ import {UserType} from '../../UserContext';
 // import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import IonIcons from 'react-native-vector-icons/Ionicons';
 import {useRoute} from '@react-navigation/native';
-import {useNavigation} from '@react-navigation/native';
+import {useNavigation, useTheme} from '@react-navigation/native';
 // import * as ImagePicker from 'react-native-image-picker';
 import {
   joinConversation,
@@ -38,6 +38,7 @@ const ChatMessagesScreen = () => {
   const [recipientsData, setRecipientsData] = React.useState([]);
   const isJoined = React.useRef(false);
   const [groupName, setGroupName] = React.useState('');
+  const {colors} = useTheme();
 
   const scrollViewRef = useRef(null);
 
@@ -179,7 +180,7 @@ const ChatMessagesScreen = () => {
             onPress={() => navigation.goBack()}
             name="arrow-back"
             size={24}
-            color="black"
+            color={colors.text}
           />
 
           <View style={{flexDirection: 'row', alignItems: 'center'}}>
@@ -201,6 +202,7 @@ const ChatMessagesScreen = () => {
                 marginLeft: recipientsData.length > 1 ? 15 : 5,
                 fontSize: 15,
                 fontWeight: 'bold',
+                color: colors.text,
               }}>
               {groupName ? groupName : recipientsData[0]?.name}
             </Text>
@@ -347,6 +349,7 @@ const ChatMessagesScreen = () => {
               borderColor: '#dddddd',
               borderRadius: 20,
               paddingHorizontal: 10,
+              color: colors.text,
             }}
             placeholder="Igloo Message"
           />

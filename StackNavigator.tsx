@@ -1,6 +1,10 @@
-import {StyleSheet} from 'react-native';
 import React from 'react';
-import {NavigationContainer} from '@react-navigation/native';
+import {useColorScheme} from 'react-native';
+import {
+  NavigationContainer,
+  DefaultTheme,
+  DarkTheme,
+} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import LoginScreen from './src/screens/LoginScreen';
 import RegisterScreen from './src/screens/RegisterScreen';
@@ -11,11 +15,12 @@ import ChatMessagesScreen from './src/screens/ChatMessagesScreen';
 import NewChatScreen from './src/screens/NewChatScreen';
 import ProfileScreen from './src/screens/ProfileScreen';
 
-const StackNavigator = () => {
+const StackNavigator: React.FC = () => {
   const Stack = createNativeStackNavigator();
+  const scheme = useColorScheme();
 
   return (
-    <NavigationContainer>
+    <NavigationContainer theme={scheme === 'dark' ? DarkTheme : DefaultTheme}>
       <Stack.Navigator>
         <Stack.Screen
           name="Login"

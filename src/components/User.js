@@ -4,10 +4,12 @@ import {UserType} from '../../UserContext';
 import API from '../config/API';
 import Toast from 'react-native-toast-message';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import {useTheme} from '@react-navigation/native';
 
 const User = ({item}) => {
   const {userId, setUserId} = useContext(UserType);
   const [requestSent, setRequestSent] = React.useState(false);
+  const {colors} = useTheme();
 
   const sendFriendRequest = async (currentUserId, selectedUserId) => {
     try {
@@ -46,7 +48,9 @@ const User = ({item}) => {
       </View>
 
       <View style={{marginLeft: 12, flex: 1}}>
-        <Text style={{fontWeight: 'bold'}}>{item?.name}</Text>
+        <Text style={{fontWeight: 'bold', color: colors.text}}>
+          {item?.name}
+        </Text>
         <Text style={{marginTop: 4, color: 'gray'}}>{item?.email}</Text>
       </View>
 

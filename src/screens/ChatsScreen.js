@@ -7,27 +7,32 @@ import {
 } from 'react-native';
 import React, {useContext, useEffect, useLayoutEffect} from 'react';
 import {UserType} from '../../UserContext';
-import {useNavigation, useFocusEffect} from '@react-navigation/native';
+import {
+  useNavigation,
+  useFocusEffect,
+  useTheme,
+} from '@react-navigation/native';
 import UserChat from '../components/UserChat';
 import Icon from 'react-native-vector-icons/Ionicons';
 import API from '../config/API';
 import Toast from 'react-native-toast-message';
 import {SwipeListView} from 'react-native-swipe-list-view';
 
-const HeaderRight = ({onPress}) => (
-  <Icon
-    name="add-circle-outline"
-    size={30}
-    color="#000"
-    style={styles.iconStyle}
-    onPress={onPress}
-  />
-);
-
 const ChatsScreen = () => {
   const [conversations, setConversations] = React.useState([]);
   const {userId} = useContext(UserType);
   const navigation = useNavigation();
+  const {colors} = useTheme();
+
+  const HeaderRight = ({onPress}) => (
+    <Icon
+      name="add-circle-outline"
+      size={30}
+      color={colors.text}
+      style={styles.iconStyle}
+      onPress={onPress}
+    />
+  );
 
   useLayoutEffect(() => {
     navigation.setOptions({

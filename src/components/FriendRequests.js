@@ -1,13 +1,14 @@
-import {StyleSheet, Text, View, Pressable, Image} from 'react-native';
+import {Text, View, Pressable, Image} from 'react-native';
 import React, {useContext} from 'react';
 import {UserType} from '../../UserContext';
-import {useNavigation} from '@react-navigation/native';
+import {useNavigation, useTheme} from '@react-navigation/native';
 import API from '../config/API';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 const FriendRequests = ({item, friendRequests, setFriendRequests}) => {
   const {userId, setUserId} = useContext(UserType);
   const navigation = useNavigation();
+  const {colors} = useTheme();
 
   const acceptRequest = async friendRequestId => {
     try {
@@ -55,7 +56,14 @@ const FriendRequests = ({item, friendRequests, setFriendRequests}) => {
         source={{uri: item.image}}
       />
 
-      <Text style={{fontSize: 15, fontWeight: 'bold', marginLeft: 10, flex: 1}}>
+      <Text
+        style={{
+          fontSize: 15,
+          fontWeight: 'bold',
+          marginLeft: 10,
+          flex: 1,
+          color: colors.text,
+        }}>
         {item?.name} sent a friend request!
       </Text>
 
@@ -82,5 +90,3 @@ const FriendRequests = ({item, friendRequests, setFriendRequests}) => {
 };
 
 export default FriendRequests;
-
-const styles = StyleSheet.create({});
