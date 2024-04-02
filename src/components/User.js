@@ -1,15 +1,24 @@
-import {StyleSheet, Text, View, Pressable, Image} from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  View,
+  Pressable,
+  Image,
+  TouchableOpacity,
+  Alert,
+} from 'react-native';
 import React, {useContext} from 'react';
 import {UserType} from '../../UserContext';
 import API from '../config/API';
 import Toast from 'react-native-toast-message';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import {useTheme} from '@react-navigation/native';
+import {useNavigation, useTheme} from '@react-navigation/native';
 
 const User = ({item}) => {
   const {userId, setUserId} = useContext(UserType);
   const [requestSent, setRequestSent] = React.useState(false);
   const {colors} = useTheme();
+  const navigation = useNavigation();
 
   const sendFriendRequest = async (currentUserId, selectedUserId) => {
     try {
@@ -39,7 +48,23 @@ const User = ({item}) => {
 
   return (
     <Pressable
-      style={{flexDirection: 'row', alignItems: 'center', marginVertical: 10}}>
+      style={{flexDirection: 'row', alignItems: 'center', marginVertical: 10}}
+      onLongPress={() =>
+        Alert.alert('Action', 'What do you want to do?', [
+          {
+            text: 'Cancel',
+            style: 'cancel',
+          },
+          {
+            text: 'Report User',
+            onPress: () =>
+              navigation.navigate('Report', {
+                reportedName: item.name,
+                reportedEmail: item.email,
+              }),
+          },
+        ])
+      }>
       <View>
         <Image
           source={{uri: item.image}}

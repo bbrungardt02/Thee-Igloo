@@ -14,6 +14,7 @@ import ChatsScreen from './src/screens/ChatsScreen';
 import ChatMessagesScreen from './src/screens/ChatMessagesScreen';
 import NewChatScreen from './src/screens/NewChatScreen';
 import ProfileScreen from './src/screens/ProfileScreen';
+import ReportScreen from './src/screens/ReportScreen';
 
 const StackNavigator: React.FC = () => {
   const Stack = createNativeStackNavigator();
@@ -29,7 +30,6 @@ const StackNavigator: React.FC = () => {
             headerShown: false,
           }}
         />
-
         <Stack.Screen
           name="Register"
           component={RegisterScreen}
@@ -37,18 +37,13 @@ const StackNavigator: React.FC = () => {
             headerShown: false,
           }}
         />
-
         <Stack.Screen name="Home" component={HomeScreen} />
-
         <Stack.Screen name="Friend Requests" component={FriendsScreen} />
-
         <Stack.Screen name="Chats" component={ChatsScreen} />
-
         <Stack.Screen name="New Chat" component={NewChatScreen} />
-
         <Stack.Screen name="Messages" component={ChatMessagesScreen} />
-
         <Stack.Screen name="Profile" component={ProfileScreen} />
+        <Stack.Screen name="Report" component={ReportScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

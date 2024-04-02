@@ -22,7 +22,7 @@ import Toast from 'react-native-toast-message';
 
 const ProfileScreen = () => {
   const navigation = useNavigation();
-  const {userId, setUserId} = useContext(UserType);
+  const {userId} = useContext(UserType);
   const [friends, setFriends] = React.useState([]);
   const {colors} = useTheme();
 
@@ -161,10 +161,18 @@ const ProfileScreen = () => {
   const renderFriend = ({item}) => (
     <TouchableOpacity
       onPress={() =>
-        Alert.alert('Block Friend', 'Are you sure? This may remove messages.', [
+        Alert.alert('Action', 'What do you want to do?', [
           {
             text: 'Cancel',
             style: 'cancel',
+          },
+          {
+            text: 'Report User',
+            onPress: () =>
+              navigation.navigate('Report', {
+                reportedName: item.name,
+                reportedEmail: item.email,
+              }),
           },
           {
             text: 'Block',
@@ -177,6 +185,7 @@ const ProfileScreen = () => {
         <Image source={{uri: item.image}} style={styles.friendImage} />
         <View style={styles.friendInfo}>
           <Text style={styles.friendName}>{item.name}</Text>
+          <Text style={styles.friendEmail}>{item.email}</Text>
         </View>
       </View>
     </TouchableOpacity>
@@ -228,6 +237,11 @@ const styles = StyleSheet.create({
   friendName: {
     fontSize: 16,
     color: '#000',
+  },
+  friendEmail: {
+    fontSize: 14,
+    color: '#888',
+    marginTop: 2,
   },
   friendsHeader: {
     fontSize: 24,
