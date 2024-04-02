@@ -14,10 +14,11 @@ import {
   GestureHandlerRootView,
   ScrollView,
 } from 'react-native-gesture-handler';
-import {useNavigation} from '@react-navigation/native';
+import {useNavigation, useTheme} from '@react-navigation/native';
 import axios from 'axios';
 import Toast from 'react-native-toast-message';
 // import * as ImagePicker from 'react-native-image-picker';
+
 const RegisterScreen = () => {
   const [email, setEmail] = React.useState('');
   const [name, setName] = React.useState('');
@@ -25,6 +26,7 @@ const RegisterScreen = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [image, setImage] = useState('');
   const navigation = useNavigation();
+  const {colors} = useTheme();
 
   // S3 bucket needed for ImagePicker
 
@@ -93,7 +95,7 @@ const RegisterScreen = () => {
         <View
           style={{
             flex: 1,
-            backgroundColor: 'white',
+            backgroundColor: colors.background,
             padding: 10,
             alignItems: 'center',
           }}>
@@ -117,6 +119,7 @@ const RegisterScreen = () => {
                   fontSize: 17,
                   fontWeight: 'bold',
                   marginTop: 15,
+                  color: colors.text,
                 }}>
                 Register to your account
               </Text>
@@ -139,8 +142,9 @@ const RegisterScreen = () => {
                     borderBottomWidth: 1,
                     marginVertical: 10,
                     width: 300,
+                    color: colors.text,
                   }}
-                  placeholderTextColor={'black'}
+                  placeholderTextColor={colors.text}
                   placeholder="enter your name"
                 />
               </View>
@@ -158,8 +162,9 @@ const RegisterScreen = () => {
                     borderBottomWidth: 1,
                     marginVertical: 10,
                     width: 300,
+                    color: colors.text,
                   }}
-                  placeholderTextColor={'black'}
+                  placeholderTextColor={colors.text}
                   placeholder="enter your email"
                 />
               </View>
@@ -178,8 +183,9 @@ const RegisterScreen = () => {
                     borderBottomWidth: 1,
                     marginVertical: 10,
                     width: 300,
+                    color: colors.text,
                   }}
-                  placeholderTextColor={'black'}
+                  placeholderTextColor={colors.text}
                   placeholder="enter password"
                 />
               </View>
@@ -197,8 +203,9 @@ const RegisterScreen = () => {
                     borderBottomWidth: 1,
                     marginVertical: 10,
                     width: 300,
+                    color: colors.text,
                   }}
-                  placeholderTextColor={'black'}
+                  placeholderTextColor={colors.text}
                   placeholder="confirm password"
                 />
               </View>
@@ -216,8 +223,9 @@ const RegisterScreen = () => {
                     borderBottomWidth: 1,
                     marginVertical: 10,
                     width: 300,
+                    color: colors.text,
                   }}
-                  placeholderTextColor={'black'}
+                  placeholderTextColor={colors.text}
                   placeholder="enter your image address"
                 />
               </View>
@@ -236,15 +244,17 @@ const RegisterScreen = () => {
 
               <Pressable
                 onPress={handleRegister}
-                style={{
-                  width: 200,
-                  backgroundColor: '#75E6DA',
-                  padding: 15,
-                  marginTop: 50,
-                  marginLeft: 'auto',
-                  marginRight: 'auto',
-                  borderRadius: 6,
-                }}>
+                style={({pressed}) => [
+                  {
+                    width: 200,
+                    backgroundColor: pressed ? '#5DB8BE' : '#75E6DA',
+                    padding: 15,
+                    marginTop: 50,
+                    marginLeft: 'auto',
+                    marginRight: 'auto',
+                    borderRadius: 6,
+                  },
+                ]}>
                 <Text
                   style={{
                     color: 'white',

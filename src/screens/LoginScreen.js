@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import React, {useEffect} from 'react';
 import {TextInput, GestureHandlerRootView} from 'react-native-gesture-handler';
-import {useNavigation} from '@react-navigation/native';
+import {useNavigation, useTheme} from '@react-navigation/native';
 import {connectSocket} from '../components/Socket';
 import * as Keychain from 'react-native-keychain';
 import axios from 'axios';
@@ -21,6 +21,7 @@ const LoginScreen = () => {
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
   const navigation = useNavigation();
+  const {colors} = useTheme();
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
@@ -87,12 +88,15 @@ const LoginScreen = () => {
       });
   };
   return (
-    <GestureHandlerRootView style={styles.root}>
+    <GestureHandlerRootView
+      style={[styles.root, {backgroundColor: colors.background}]}>
       <View style={styles.container}>
         <KeyboardAvoidingView>
           <View style={styles.innerContainer}>
             <Text style={styles.signInText}>Sign In</Text>
-            <Text style={styles.signInSubText}>Sign in to your account</Text>
+            <Text style={[styles.signInSubText, {color: colors.text}]}>
+              Sign in to your account
+            </Text>
           </View>
           <View style={styles.formContainer}>
             <View>
@@ -100,8 +104,8 @@ const LoginScreen = () => {
               <TextInput
                 value={email}
                 onChangeText={text => setEmail(text)}
-                style={styles.input}
-                placeholderTextColor={'black'}
+                style={[styles.input, {color: colors.text}]}
+                placeholderTextColor={colors.text}
                 placeholder="enter your Email"
               />
             </View>
@@ -111,12 +115,17 @@ const LoginScreen = () => {
                 value={password}
                 onChangeText={text => setPassword(text)}
                 secureTextEntry={true}
-                style={styles.input}
-                placeholderTextColor={'black'}
+                style={[styles.input, {color: colors.text}]}
+                placeholderTextColor={colors.text}
                 placeholder="enter your Password"
               />
             </View>
-            <Pressable onPress={handleLogin} style={styles.loginButton}>
+            <Pressable
+              onPress={handleLogin}
+              style={({pressed}) => [
+                styles.loginButton,
+                {backgroundColor: pressed ? '#5DB8BE' : '#75E6DA'},
+              ]}>
               <Text style={styles.loginButtonText}>Login</Text>
             </Pressable>
             <Pressable
@@ -141,7 +150,6 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    backgroundColor: 'white',
     padding: 10,
     alignItems: 'center',
   },
