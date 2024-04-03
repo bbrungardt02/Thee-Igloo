@@ -1,12 +1,4 @@
-import {
-  StyleSheet,
-  Text,
-  View,
-  Pressable,
-  Image,
-  TouchableOpacity,
-  Alert,
-} from 'react-native';
+import {StyleSheet, Text, View, Pressable, Image, Alert} from 'react-native';
 import React, {useContext} from 'react';
 import {UserType} from '../../UserContext';
 import API from '../config/API';
@@ -22,7 +14,7 @@ const User = ({item}) => {
 
   const sendFriendRequest = async (currentUserId, selectedUserId) => {
     try {
-      const response = await API.post(`/friends/request`, {
+      const response = await API.post('/friends/request', {
         currentUserId,
         selectedUserId,
       });

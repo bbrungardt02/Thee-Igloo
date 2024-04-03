@@ -89,6 +89,7 @@ const ProfileScreen = () => {
       },
       {
         text: 'Confirm',
+        style: 'destructive',
         onPress: async () => {
           try {
             // Disconnect the user from the socket
@@ -118,23 +119,36 @@ const ProfileScreen = () => {
   };
 
   const removeFriend = async friendId => {
-    try {
-      const response = await API.delete(`/friends/${userId}/${friendId}`);
-      if (response.status === 200) {
-        setFriends(friends.filter(friend => friend._id !== friendId));
-        Toast.show({
-          type: 'success',
-          text1: 'Friend removed & blocked successfully',
-        });
-      } else {
-        throw new Error('Error removing & blocking friend');
-      }
-    } catch (error) {
-      Toast.show({
-        type: 'error',
-        text1: 'Error removing & blocking friend',
-      });
-    }
+    Alert.alert('Block User', 'Are you sure you want to block this user?', [
+      {
+        text: 'Cancel',
+        onPress: () => console.log('Cancel Pressed'),
+        style: 'cancel',
+      },
+      {
+        text: 'Confirm',
+        style: 'destructive',
+        onPress: async () => {
+          try {
+            const response = await API.delete(`/friends/${userId}/${friendId}`);
+            if (response.status === 200) {
+              setFriends(friends.filter(friend => friend._id !== friendId));
+              Toast.show({
+                type: 'success',
+                text1: 'Friend removed & blocked successfully',
+              });
+            } else {
+              throw new Error('Error removing & blocking friend');
+            }
+          } catch (error) {
+            Toast.show({
+              type: 'error',
+              text1: 'Error removing & blocking friend',
+            });
+          }
+        },
+      },
+    ]);
   };
 
   useLayoutEffect(() => {
