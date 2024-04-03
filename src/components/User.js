@@ -15,7 +15,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import {useNavigation, useTheme} from '@react-navigation/native';
 
 const User = ({item}) => {
-  const {userId, setUserId} = useContext(UserType);
+  const {userId} = useContext(UserType);
   const [requestSent, setRequestSent] = React.useState(false);
   const {colors} = useTheme();
   const navigation = useNavigation();

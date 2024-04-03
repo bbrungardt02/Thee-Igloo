@@ -6,7 +6,7 @@ import API from '../config/API';
 import {useTheme} from '@react-navigation/native';
 
 const FriendsScreen = () => {
-  const {userId, setUserId} = useContext(UserType);
+  const {userId} = useContext(UserType);
   const [friendRequests, setFriendRequests] = React.useState([]);
   const {colors} = useTheme();
 

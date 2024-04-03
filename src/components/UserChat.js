@@ -4,7 +4,7 @@ import {UserType} from '../../UserContext';
 import {useNavigation} from '@react-navigation/native';
 
 const UserChat = ({item}) => {
-  const {userId, setUserId} = useContext(UserType);
+  const {userId} = useContext(UserType);
   const navigation = useNavigation();
 
   // Filter out the current user from the participants array

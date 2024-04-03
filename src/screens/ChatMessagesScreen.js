@@ -108,6 +108,7 @@ const ChatMessagesScreen = () => {
         text: message,
         timestamp: new Date().toISOString(),
       };
+      console.log('USERNAME', userName);
 
       sendMessage(newMessage);
       // Clear the message input

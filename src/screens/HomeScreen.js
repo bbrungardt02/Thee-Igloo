@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import {StyleSheet, Text, View, ScrollView} from 'react-native';
-import React, {useLayoutEffect, useContext, useEffect} from 'react';
+import React, {useLayoutEffect, useEffect} from 'react';
 import {useNavigation, useTheme} from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
@@ -11,7 +11,8 @@ import * as Keychain from 'react-native-keychain';
 
 const HomeScreen = () => {
   const navigation = useNavigation();
-  const {userId, setUserId, userName, setUserName} = useContext(UserType);
+  const {userId, setUserId, setUserName, setUserEmail} =
+    React.useContext(UserType);
   const [users, setUsers] = React.useState([]);
   const {colors} = useTheme();
 
@@ -65,6 +66,7 @@ const HomeScreen = () => {
             );
             if (loggedInUser) {
               setUserName(loggedInUser.name);
+              setUserEmail(loggedInUser.email);
             }
           })
           .catch(error => {

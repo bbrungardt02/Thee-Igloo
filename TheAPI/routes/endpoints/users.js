@@ -214,10 +214,13 @@ router.get('/:userId', authenticateJWT, async (req, res) => {
     const loggedInUser = await User.findById(loggedInUserId);
     const friends = loggedInUser.friends.map(friend => friend.toString());
 
-    // Find all users who are neither the logged-in user nor their friends
+    // Find all users who are not friends with the logged-in user
     const users = await User.find({
-      _id: {$nin: friends},
+      _id: {$nin: friends, $ne: loggedInUserId},
     });
+
+    // Include the logged-in user in the response
+    users.push(loggedInUser);
 
     res.status(200).json(users);
   } catch (err) {

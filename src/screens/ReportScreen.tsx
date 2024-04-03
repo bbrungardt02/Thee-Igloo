@@ -1,5 +1,15 @@
-import React, {useContext, useState} from 'react';
-import {View, Text, StyleSheet, TextInput, Button} from 'react-native';
+import React from 'react';
+import {
+  ScrollView,
+  Text,
+  StyleSheet,
+  TextInput,
+  Button,
+  TouchableWithoutFeedback,
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
+} from 'react-native';
 import * as MailComposer from 'react-native-email-link';
 import {UserType} from '../../UserContext';
 import {useRoute} from '@react-navigation/native';
@@ -15,9 +25,12 @@ const ReportScreen: React.FC = () => {
   const route = useRoute();
   const {reportedName, reportedEmail} = route.params as ReportScreenRouteParams;
 
-  const user = useContext(UserType);
-  const [message, setMessage] = useState('');
+  const user = React.useContext(UserType);
+  const [message, setMessage] = React.useState('');
   const {colors} = useTheme();
+
+  console.log('userName:', user?.userName);
+  console.log('userEmail:', user?.userEmail);
 
   const handleSubmit = () => {
     MailComposer.openComposer({
@@ -28,26 +41,36 @@ const ReportScreen: React.FC = () => {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={[styles.text, {color: colors.text}]}>Report User</Text>
-      <Text style={[styles.name, {color: colors.text}]}>
-        Reported User's Name:
-      </Text>
-      <Text style={[styles.input, {color: colors.text}]}>{reportedName}</Text>
-      <Text style={[styles.name, {color: colors.text}]}>
-        Reported User's Email:
-      </Text>
-      <Text style={[styles.input, {color: colors.text}]}>{reportedEmail}</Text>
-      <TextInput
-        style={[styles.messageBox, {color: colors.text}]}
-        multiline
-        numberOfLines={4}
-        placeholder="Your Message"
-        value={message}
-        onChangeText={setMessage}
-      />
-      <Button title="Submit Report" onPress={handleSubmit} />
-    </View>
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={styles.container}>
+        <ScrollView>
+          <Text style={[styles.text, {color: colors.text}]}>Report User</Text>
+          <Text style={[styles.name, {color: colors.text}]}>
+            Reported User's Name:
+          </Text>
+          <Text style={[styles.input, {color: colors.text}]}>
+            {reportedName}
+          </Text>
+          <Text style={[styles.name, {color: colors.text}]}>
+            Reported User's Email:
+          </Text>
+          <Text style={[styles.input, {color: colors.text}]}>
+            {reportedEmail}
+          </Text>
+          <TextInput
+            style={[styles.messageBox, {color: colors.text}]}
+            multiline
+            numberOfLines={4}
+            placeholder="Your Message"
+            value={message}
+            onChangeText={setMessage}
+          />
+          <Button title="Submit Report" onPress={handleSubmit} />
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </TouchableWithoutFeedback>
   );
 };
 

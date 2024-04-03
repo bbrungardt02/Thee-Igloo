@@ -6,7 +6,7 @@ import API from '../config/API';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 const FriendRequests = ({item, friendRequests, setFriendRequests}) => {
-  const {userId, setUserId} = useContext(UserType);
+  const {userId} = useContext(UserType);
   const navigation = useNavigation();
   const {colors} = useTheme();
 
