@@ -1,5 +1,11 @@
 import React, {useState, useEffect} from 'react';
-import {StyleSheet, ImageBackground, useColorScheme, View} from 'react-native';
+import {
+  StyleSheet,
+  ImageBackground,
+  useColorScheme,
+  View,
+  Dimensions,
+} from 'react-native';
 import * as Animatable from 'react-native-animatable';
 // import {useTheme} from '@react-navigation/native';
 import {UserContext} from './UserContext';
@@ -15,7 +21,7 @@ function App(): React.JSX.Element {
   useEffect(() => {
     setTimeout(() => {
       setShowSplash(false);
-    }, 3000); // hide the splash screen after 3 seconds
+    }, 5000);
   }, []);
 
   if (showSplash) {
@@ -25,9 +31,15 @@ function App(): React.JSX.Element {
         style={styles.container}
         resizeMode="contain">
         <View style={{flexDirection: 'row', justifyContent: 'center'}}>
-          {Array.from('Thee Igloo').map((letter, index) => (
-            <View
+          {Array.from('Thee Igloo').map((letter, index, arr) => (
+            <Animatable.View
               key={index}
+              animation={{
+                from: {translateX: -Dimensions.get('window').width},
+                to: {translateX: 0},
+              }}
+              duration={1000}
+              delay={(arr.length - index) * 300}
               style={{
                 position: 'relative',
                 alignItems: 'center',
@@ -63,7 +75,7 @@ function App(): React.JSX.Element {
                 }}>
                 {letter}
               </Animatable.Text>
-            </View>
+            </Animatable.View>
           ))}
         </View>
       </ImageBackground>
