@@ -27,6 +27,12 @@ const LoginScreen = () => {
   useEffect(() => {
     const checkLoginStatus = async () => {
       try {
+        const termsAccepted = await AsyncStorage.getItem('termsAccepted');
+        if (!termsAccepted) {
+          navigation.replace('Terms');
+          return;
+        }
+
         const credentials = await Keychain.getGenericPassword();
         if (credentials) {
           const {username: userId, password: refreshToken} = credentials;
