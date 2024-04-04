@@ -11,6 +11,8 @@
 		13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.mm */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
+		1C3EA5852BBE8A6A001DAD9E /* CustomVibration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C3EA5842BBE8A6A001DAD9E /* CustomVibration.swift */; };
+		1C3EA5892BBE955D001DAD9E /* CustomVibration.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C3EA5882BBE955D001DAD9E /* CustomVibration.m */; };
 		1C8E96572B66417200C41A03 /* Fonts in Resources */ = {isa = PBXBuildFile; fileRef = 1C8E96562B66417200C41A03 /* Fonts */; };
 		58DEED608BE2EE9ED91D7C47 /* libPods-TheeIgloo-TheeIglooTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EEA72BB9F3BE07362CE60362 /* libPods-TheeIgloo-TheeIglooTests.a */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
@@ -37,6 +39,9 @@
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = TheeIgloo/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = TheeIgloo/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = TheeIgloo/main.m; sourceTree = "<group>"; };
+		1C3EA5832BBE8A6A001DAD9E /* TheeIgloo-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "TheeIgloo-Bridging-Header.h"; sourceTree = "<group>"; };
+		1C3EA5842BBE8A6A001DAD9E /* CustomVibration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomVibration.swift; sourceTree = "<group>"; };
+		1C3EA5882BBE955D001DAD9E /* CustomVibration.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CustomVibration.m; sourceTree = "<group>"; };
 		1C4105602B6B6ED100B6441C /* TheeIgloo.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = TheeIgloo.entitlements; path = TheeIgloo/TheeIgloo.entitlements; sourceTree = "<group>"; };
 		1C8E96562B66417200C41A03 /* Fonts */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Fonts; sourceTree = "<group>"; };
 		2E4F01C089AEE2C6497624CE /* Pods-TheeIgloo-TheeIglooTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TheeIgloo-TheeIglooTests.release.xcconfig"; path = "Target Support Files/Pods-TheeIgloo-TheeIglooTests/Pods-TheeIgloo-TheeIglooTests.release.xcconfig"; sourceTree = "<group>"; };
@@ -96,6 +101,9 @@
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */,
 				13B07FB71A68108700A75B9A /* main.m */,
+				1C3EA5842BBE8A6A001DAD9E /* CustomVibration.swift */,
+				1C3EA5832BBE8A6A001DAD9E /* TheeIgloo-Bridging-Header.h */,
+				1C3EA5882BBE955D001DAD9E /* CustomVibration.m */,
 			);
 			name = TheeIgloo;
 			sourceTree = "<group>";
@@ -211,7 +219,7 @@
 						TestTargetID = 13B07F861A680F5B00A75B9A;
 					};
 					13B07F861A680F5B00A75B9A = {
-						LastSwiftMigration = 1120;
+						LastSwiftMigration = 1530;
 					};
 				};
 			};
@@ -399,6 +407,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */,
+				1C3EA5892BBE955D001DAD9E /* CustomVibration.m in Sources */,
+				1C3EA5852BBE8A6A001DAD9E /* CustomVibration.swift in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -418,6 +428,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 84B29D4EB711057F14AB22A0 /* Pods-TheeIgloo-TheeIglooTests.debug.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				DEVELOPMENT_TEAM = LR6DVDUS36;
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -446,6 +457,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 2E4F01C089AEE2C6497624CE /* Pods-TheeIgloo-TheeIglooTests.release.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
 				DEVELOPMENT_TEAM = LR6DVDUS36;
@@ -492,6 +504,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = TheeIgloo;
+				SWIFT_OBJC_BRIDGING_HEADER = "TheeIgloo-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -522,6 +535,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = TheeIgloo;
+				SWIFT_OBJC_BRIDGING_HEADER = "TheeIgloo-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
 			};

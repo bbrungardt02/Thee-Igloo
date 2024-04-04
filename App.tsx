@@ -5,24 +5,28 @@ import {
   useColorScheme,
   View,
   Dimensions,
+  NativeModules,
 } from 'react-native';
 import * as Animatable from 'react-native-animatable';
-// import {useTheme} from '@react-navigation/native';
 import {UserContext} from './UserContext';
 import StackNavigator from './StackNavigator';
 import Toast from 'react-native-toast-message';
 
+const {CustomVibration} = NativeModules;
+
 function App(): React.JSX.Element {
   const [showSplash, setShowSplash] = useState(true);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  // const {colors} = useTheme();
   const scheme = useColorScheme();
 
   useEffect(() => {
+    if (showSplash) {
+      CustomVibration.triggerVibration();
+    }
+
     setTimeout(() => {
       setShowSplash(false);
     }, 5000);
-  }, []);
+  }, [showSplash]);
 
   if (showSplash) {
     return (
