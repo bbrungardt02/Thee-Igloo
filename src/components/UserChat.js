@@ -17,7 +17,7 @@ const UserChat = ({item}) => {
   const lastMessage = item.messages[item.messages.length - 1];
 
   // Check if the last message has been read by the current user
-  const isUnread = !lastMessage.readBy.includes(userId);
+  const isUnread = lastMessage ? !lastMessage.readBy.includes(userId) : false;
 
   return (
     <Pressable
@@ -47,8 +47,13 @@ const UserChat = ({item}) => {
         <Text style={{fontSize: 15, fontWeight: isUnread ? 'bold' : '500'}}>
           {item?.name ? item?.name : firstOtherParticipant?.name}
         </Text>
-        <Text style={{marginTop: 3, color: 'gray', fontWeight: '500'}}>
-          {lastMessage?.text}
+        <Text
+          style={{
+            marginTop: 3,
+            color: lastMessage ? 'gray' : 'red',
+            fontWeight: '500',
+          }}>
+          {lastMessage?.text || 'No messages yet'}
         </Text>
       </View>
 
@@ -65,11 +70,18 @@ const UserChat = ({item}) => {
       )}
 
       <View>
-        <Text style={{fontSize: 11, fontWeight: '400', color: '#585858'}}>
-          {new Date(lastMessage?.timestamp).toLocaleTimeString([], {
-            hour: '2-digit',
-            minute: '2-digit',
-          })}
+        <Text
+          style={{
+            fontSize: 11,
+            fontWeight: '400',
+            color: lastMessage ? '#585858' : 'red',
+          }}>
+          {lastMessage
+            ? new Date(lastMessage.timestamp).toLocaleTimeString([], {
+                hour: '2-digit',
+                minute: '2-digit',
+              })
+            : ''}
         </Text>
       </View>
     </Pressable>

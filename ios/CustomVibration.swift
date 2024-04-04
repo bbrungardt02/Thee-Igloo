@@ -8,7 +8,9 @@
 import Foundation
 import CoreHaptics
 
-@objc(CustomVibration) class CustomVibration: NSObject { private var hapticEngine: CHHapticEngine?
+@objc(CustomVibration) class CustomVibration: NSObject { 
+  private var hapticEngine: CHHapticEngine?
+
   override init() {
     super.init()
     do {
@@ -21,30 +23,36 @@ import CoreHaptics
   
   @objc(triggerVibration)
   func triggerVibration() -> Void {
-    guard CHHapticEngine.capabilitiesForHardware().supportsHaptics else {
-      print("Device does not support haptics")
-      return
-    }
-    
-  let pattern = [
-  CHHapticEvent(eventType: .hapticTransient, parameters: [], relativeTime: 0),
-  CHHapticEvent(eventType: .hapticTransient, parameters: [], relativeTime: 0.3),
-  CHHapticEvent(eventType: .hapticTransient, parameters: [], relativeTime: 0.6),
-  CHHapticEvent(eventType: .hapticTransient, parameters: [], relativeTime: 0.9),
-  CHHapticEvent(eventType: .hapticTransient, parameters: [], relativeTime: 1.2),
-  CHHapticEvent(eventType: .hapticTransient, parameters: [], relativeTime: 1.5),
-  CHHapticEvent(eventType: .hapticTransient, parameters: [], relativeTime: 1.8),
-  CHHapticEvent(eventType: .hapticTransient, parameters: [], relativeTime: 2.1),
-  CHHapticEvent(eventType: .hapticTransient, parameters: [], relativeTime: 2.4),
-  CHHapticEvent(eventType: .hapticTransient, parameters: [], relativeTime: 2.7)
-]
-    
-    do {
-      let patternPlayer = try hapticEngine?.makePlayer(with: CHHapticPattern(events: pattern, parameters: []))
-      try hapticEngine?.start()
-      try patternPlayer?.start(atTime: CHHapticTimeImmediate)
-    } catch let error {
-      print("Error playing haptic pattern: \(error.localizedDescription)")
-    }
+      guard CHHapticEngine.capabilitiesForHardware().supportsHaptics else {
+          return
+      }
+      
+      do {
+           let pattern = try CHHapticPattern(events: [
+        CHHapticEvent(eventType: .hapticTransient, parameters: [
+            CHHapticEventParameter(parameterID: .hapticIntensity, value: 1),
+            CHHapticEventParameter(parameterID: .hapticSharpness, value: 1)
+        ], relativeTime: 0),
+        CHHapticEvent(eventType: .hapticContinuous, parameters: [
+            CHHapticEventParameter(parameterID: .hapticIntensity, value: 0.5),
+            CHHapticEventParameter(parameterID: .hapticSharpness, value: 0.5)
+        ], relativeTime: 0.1, duration: 1.0),
+        CHHapticEvent(eventType: .hapticTransient, parameters: [
+            CHHapticEventParameter(parameterID: .hapticIntensity, value: 0.8),
+            CHHapticEventParameter(parameterID: .hapticSharpness, value: 0.8)
+        ], relativeTime: 1.2)
+    ], parameters: [])
+          
+          // Create a player to play the haptic pattern
+          let patternPlayer = try hapticEngine?.makePlayer(with: pattern)
+          
+          // Start the haptic engine
+          try hapticEngine?.start()
+          
+          // Start the pattern player
+          try patternPlayer?.start(atTime: CHHapticTimeImmediate)
+      } catch let error {
+          print("Error playing haptic pattern: \(error.localizedDescription)")
+      }
   }
 }

@@ -19,15 +19,15 @@ function App(): React.JSX.Element {
   const scheme = useColorScheme();
 
   useEffect(() => {
-    if (showSplash) {
-      CustomVibration.triggerVibration();
-    }
+    // if (showSplash) {
+    //   CustomVibration.triggerVibration();
+    // }
 
     setTimeout(() => {
       setShowSplash(false);
     }, 5000);
-  }, [showSplash]);
-
+  }, []);
+  // showSplash ^^^
   if (showSplash) {
     return (
       <ImageBackground
@@ -44,6 +44,8 @@ function App(): React.JSX.Element {
               }}
               duration={1000}
               delay={(arr.length - index) * 300}
+              onAnimationBegin={() => CustomVibration.triggerVibration()}
+              // onAnimationEnd={() => CustomVibration.triggerVibration()}
               style={{
                 position: 'relative',
                 alignItems: 'center',

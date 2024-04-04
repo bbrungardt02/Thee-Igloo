@@ -91,18 +91,9 @@ router.get('/users/:userId', authenticateJWT, async (req, res) => {
 
     // Sort the conversations by the timestamp of the lastMessage
     conversations.sort((a, b) => {
-      if (
-        a.lastMessage &&
-        a.lastMessage.timestamp &&
-        b.lastMessage &&
-        b.lastMessage.timestamp
-      ) {
-        return (
-          new Date(b.lastMessage.timestamp) - new Date(a.lastMessage.timestamp)
-        );
-      } else {
-        return 0;
-      }
+      const aTimestamp = a.lastMessage ? a.lastMessage.timestamp : 0;
+      const bTimestamp = b.lastMessage ? b.lastMessage.timestamp : 0;
+      return bTimestamp - aTimestamp;
     });
 
     res.json(conversations);
