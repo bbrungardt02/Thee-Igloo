@@ -48,9 +48,9 @@
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string></string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>Your app requires access to the microphone for capturing videos with sound.</string>
+	<string>Thee Igloo requires access to the microphone for capturing videos with sound.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Your app requires access to the photo library for selecting photos and videos.</string>
+	<string>Thee Igloo requires access to the photo library for selecting photos and videos.</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>AntDesign.ttf</string>

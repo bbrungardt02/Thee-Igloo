@@ -1,9 +1,9 @@
-import axios from 'axios';
+import axios, {AxiosError} from 'axios';
 import * as Keychain from 'react-native-keychain';
 import {SERVER_ADDRESS} from '@env';
 import {Alert} from 'react-native';
 
-let accessToken = null;
+let accessToken: string | null = null;
 
 // android reads localhost as the simulator's own local running address so we need to use this weird workaround
 // Switch out baseURL with SERVER_ADDRESS below for connection to EC2 instance
@@ -23,15 +23,19 @@ API.interceptors.request.use(
     if (!accessToken) {
       const credentials = await Keychain.getGenericPassword();
       if (credentials) {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const {username: userId, password: refreshToken} = credentials;
 
         // Access token not found or expired, get a new one using the refresh token
         try {
-          const response = await axios.post(`${baseURL}/users/token`, {
-            refreshToken: refreshToken,
-          });
+          const response = await axios.post<{accessToken: string}>(
+            `${baseURL}/users/token`,
+            {
+              refreshToken: refreshToken,
+            },
+          );
           accessToken = response.data.accessToken;
-        } catch (error) {
+        } catch (error: any) {
           if (error.response && error.response.status === 401) {
             // Refresh token is invalid or expired, clear the stored credentials
             await Keychain.resetGenericPassword();
@@ -45,11 +49,12 @@ API.interceptors.request.use(
     }
 
     // Add the access token to the request header
+
     config.headers.Authorization = `Bearer ${accessToken}`;
 
     return config;
   },
-  error => {
+  (error: AxiosError) => {
     return Promise.reject(error);
   },
 );

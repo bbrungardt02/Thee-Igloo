@@ -78,17 +78,22 @@ module.exports = function (io) {
 
     socket.on('leaveConversation', ({conversationId, userId}) => {
       if (conversationId) {
-        // Remove the user from the conversation room
-        const index = conversationRooms[conversationId].indexOf(userId);
-        if (index !== -1) {
-          conversationRooms[conversationId].splice(index, 1);
-        }
+        // Check if the conversation room exists
+        if (conversationRooms[conversationId]) {
+          // Remove the user from the conversation room
+          const index = conversationRooms[conversationId].indexOf(userId);
+          if (index !== -1) {
+            conversationRooms[conversationId].splice(index, 1);
+          }
 
-        // Log the users who are currently in the conversation room
-        console.log(
-          `Users in conversation ${conversationId} after user ${userId} left:`,
-          conversationRooms[conversationId],
-        );
+          // Log the users who are currently in the conversation room
+          console.log(
+            `Users in conversation ${conversationId} after user ${userId} left:`,
+            conversationRooms[conversationId],
+          );
+        } else {
+          console.log(`No conversation room found for ID: ${conversationId}`);
+        }
 
         socket.leave(conversationId, error => {
           if (error) {
@@ -106,20 +111,16 @@ module.exports = function (io) {
 
     socket.on('message', async message => {
       try {
-        const {conversationId, userId, text} = message;
-
-        let images = [];
-        let videos = [];
-        let audios = [];
+        const {conversationId, userId, text, images, videos, audios} = message;
 
         const newMessage = new Message({
           conversationId: conversationId,
           userId: userId,
           text: text,
           timestamp: new Date(),
-          images,
-          videos,
-          audios,
+          images: images,
+          videos: videos,
+          audios: audios,
           readBy: [userId],
         });
 
@@ -154,7 +155,10 @@ module.exports = function (io) {
             `Users in conversation ${conversationId}:`,
             conversationRooms[conversationId],
           );
-          if (conversationRooms[conversationId].includes(user._id.toString())) {
+          if (
+            conversationRooms[conversationId] &&
+            conversationRooms[conversationId].includes(user._id.toString())
+          ) {
             continue;
           }
 
@@ -222,9 +226,14 @@ module.exports = function (io) {
       }
       // Remove the user from all conversation rooms
       for (let conversationId in conversationRooms) {
-        const index = conversationRooms[conversationId].indexOf(userId);
-        if (index !== -1) {
-          conversationRooms[conversationId].splice(index, 1);
+        // Check if the conversation room exists
+        if (conversationRooms[conversationId]) {
+          const index = conversationRooms[conversationId].indexOf(userId);
+          if (index !== -1) {
+            conversationRooms[conversationId].splice(index, 1);
+          }
+        } else {
+          console.log(`No conversation room found for ID: ${conversationId}`);
         }
       }
     });

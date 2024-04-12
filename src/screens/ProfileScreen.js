@@ -9,16 +9,15 @@ import {
   Button,
   ScrollView,
 } from 'react-native';
-import React, {useEffect, useLayoutEffect, useContext} from 'react';
+import React, {useEffect, useContext} from 'react';
 import * as Keychain from 'react-native-keychain';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import {useNavigation, useTheme} from '@react-navigation/native';
 import {UserType} from '../../UserContext';
 import API from '../config/API';
 import {socket} from '../components/Socket';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import {openComposer} from 'react-native-email-link';
 import Toast from 'react-native-toast-message';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 const ProfileScreen = () => {
   const navigation = useNavigation();
@@ -42,81 +41,43 @@ const ProfileScreen = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const logout = async () => {
-    Alert.alert('Logout', 'Are you sure you want to logout?', [
-      {
-        text: 'Cancel',
-        onPress: () => console.log('Cancel Pressed'),
-        style: 'cancel',
-      },
-      {
-        text: 'Confirm',
-        onPress: async () => {
-          // Disconnect the user from the socket
-          if (socket) {
-            socket.disconnect();
-          }
+  // const deleteAccount = async userId => {
+  //   Alert.alert('PERMANENTLY DELETE ACCOUNT', 'Are you sure?', [
+  //     {
+  //       text: 'Cancel',
+  //       onPress: () => console.log('Cancel Pressed'),
+  //       style: 'cancel',
+  //     },
+  //     {
+  //       text: 'Confirm',
+  //       style: 'destructive',
+  //       onPress: async () => {
+  //         try {
+  //           // Disconnect the user from the socket
+  //           if (socket) {
+  //             socket.disconnect();
+  //           }
 
-          // Get the device token
-          let deviceToken = null;
-          try {
-            deviceToken = await AsyncStorage.getItem('pushToken');
-          } catch (error) {
-            console.log('Error getting device token from AsyncStorage:', error);
-          }
+  //           // Send a request to the delete endpoint
+  //           const response = await API.delete(`/users/delete/${userId}`);
+  //           if (response.status !== 200) {
+  //             throw new Error('Error deleting account');
+  //           }
 
-          // Send a request to the logout endpoint with the device token
-          const URL = '/users/logout';
-          API.post(URL, {deviceToken});
+  //           // Clear user credentials from Keychain
+  //           await Keychain.resetGenericPassword();
 
-          // Clear user credentials from Keychain
-          await Keychain.resetGenericPassword();
-          navigation.reset({
-            index: 0,
-            routes: [{name: 'Login'}],
-          });
-        },
-      },
-    ]);
-  };
-
-  const deleteAccount = async userId => {
-    Alert.alert('PERMANENTLY DELETE ACCOUNT', 'Are you sure?', [
-      {
-        text: 'Cancel',
-        onPress: () => console.log('Cancel Pressed'),
-        style: 'cancel',
-      },
-      {
-        text: 'Confirm',
-        style: 'destructive',
-        onPress: async () => {
-          try {
-            // Disconnect the user from the socket
-            if (socket) {
-              socket.disconnect();
-            }
-
-            // Send a request to the delete endpoint
-            const response = await API.delete(`/users/delete/${userId}`);
-            if (response.status !== 200) {
-              throw new Error('Error deleting account');
-            }
-
-            // Clear user credentials from Keychain
-            await Keychain.resetGenericPassword();
-
-            navigation.reset({
-              index: 0,
-              routes: [{name: 'Login'}],
-            });
-          } catch (error) {
-            Alert.alert('Error', 'Error deleting account');
-          }
-        },
-      },
-    ]);
-  };
+  //           navigation.reset({
+  //             index: 0,
+  //             routes: [{name: 'Login'}],
+  //           });
+  //         } catch (error) {
+  //           Alert.alert('Error', 'Error deleting account');
+  //         }
+  //       },
+  //     },
+  //   ]);
+  // };
 
   const removeFriend = async friendId => {
     Alert.alert('Block User', 'Are you sure you want to block this user?', [
@@ -151,26 +112,27 @@ const ProfileScreen = () => {
     ]);
   };
 
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerRight: () => (
-        <MaterialIcons
-          onPress={logout}
-          name="logout"
-          size={24}
-          color={colors.text}
-        />
-      ),
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   const sendEmail = () => {
     openComposer({
       to: 'bbrungardt5@gmail.com',
       body: 'Describe your issue here',
     });
   };
+
+  useEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <TouchableOpacity onPress={() => navigation.navigate('Settings')}>
+          <Icon
+            name="settings-outline"
+            size={25}
+            color={colors.text}
+            style={{marginRight: 10}}
+          />
+        </TouchableOpacity>
+      ),
+    });
+  }, [colors.text, navigation]);
 
   const renderFriend = ({item}) => (
     <TouchableOpacity
@@ -228,11 +190,11 @@ const ProfileScreen = () => {
 
       <Button title="Report Issue" onPress={sendEmail} />
 
-      <TouchableOpacity
+      {/* <TouchableOpacity
         style={styles.deleteButton}
         onPress={() => deleteAccount(userId)}>
         <Text style={styles.deleteButtonText}>Delete Account</Text>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
     </ScrollView>
   );
 };
@@ -284,17 +246,17 @@ const styles = StyleSheet.create({
     color: 'gray',
     marginTop: 10,
   },
-  deleteButton: {
-    backgroundColor: '#ff0000',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 5,
-    marginTop: 10,
-    marginBottom: 200,
-    alignSelf: 'center',
-  },
-  deleteButtonText: {
-    color: '#ffffff',
-    fontWeight: 'bold',
-  },
+  // deleteButton: {
+  //   backgroundColor: '#ff0000',
+  //   paddingVertical: 10,
+  //   paddingHorizontal: 20,
+  //   borderRadius: 5,
+  //   marginTop: 10,
+  //   marginBottom: 200,
+  //   alignSelf: 'center',
+  // },
+  // deleteButtonText: {
+  //   color: '#ffffff',
+  //   fontWeight: 'bold',
+  // },
 });

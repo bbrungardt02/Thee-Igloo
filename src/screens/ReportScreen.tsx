@@ -12,8 +12,7 @@ import {
 } from 'react-native';
 import * as MailComposer from 'react-native-email-link';
 import {UserType} from '../../UserContext';
-import {useRoute} from '@react-navigation/native';
-import {useTheme} from '@react-navigation/native';
+import {useRoute, useTheme} from '@react-navigation/native';
 
 // Define a type for the route params
 type ReportScreenRouteParams = {

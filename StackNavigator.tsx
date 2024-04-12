@@ -16,9 +16,26 @@ import NewChatScreen from './src/screens/NewChatScreen';
 import ProfileScreen from './src/screens/ProfileScreen';
 import ReportScreen from './src/screens/ReportScreen';
 import TermsScreen from './src/screens/TermsScreen';
+import SettingsScreen from './src/screens/SettingsScreen';
+
+// Define the type for your navigation parameters
+export type RootParamList = {
+  Login: undefined;
+  Register: undefined;
+  Home: undefined;
+  'Friend Requests': undefined;
+  Chats: undefined;
+  'New Chat': undefined;
+  Messages: undefined;
+  Profile: undefined;
+  Report: undefined;
+  Terms: undefined;
+  Settings: undefined;
+};
 
 const StackNavigator: React.FC = () => {
-  const Stack = createNativeStackNavigator();
+  // Pass RootParamList to createNativeStackNavigator
+  const Stack = createNativeStackNavigator<RootParamList>();
   const scheme = useColorScheme();
 
   return (
@@ -46,6 +63,7 @@ const StackNavigator: React.FC = () => {
         <Stack.Screen name="Profile" component={ProfileScreen} />
         <Stack.Screen name="Report" component={ReportScreen} />
         <Stack.Screen name="Terms" component={TermsScreen} />
+        <Stack.Screen name="Settings" component={SettingsScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "^1.23.1",
+    "@react-native-camera-roll/camera-roll": "^7.5.2",
     "@react-native-community/push-notification-ios": "^1.11.0",
     "@react-native-masked-view/masked-view": "^0.3.1",
     "@react-native-picker/picker": "^2.6.1",
@@ -26,7 +27,7 @@
     "react-native-email-link": "^1.15.0",
     "react-native-emoji-selector": "^0.2.0",
     "react-native-gesture-handler": "^2.14.0",
-    "react-native-image-picker": "^7.1.0",
+    "react-native-image-picker": "^7.1.2",
     "react-native-keychain": "^8.1.2",
     "react-native-multiple-select": "^0.5.12",
     "react-native-push-notification": "^8.1.1",
@@ -35,6 +36,8 @@
     "react-native-swipe-list-view": "^3.2.9",
     "react-native-toast-message": "^2.2.0",
     "react-native-vector-icons": "^10.0.3",
+    "react-native-video": "^5.2.1",
+    "rn-fetch-blob": "^0.12.0",
     "socket.io-client": "^4.7.3",
     "uuid": "^9.0.1"
   },
@@ -47,6 +50,7 @@
     "@react-native/metro-config": "0.73.3",
     "@react-native/typescript-config": "0.73.1",
     "@types/react": "^18.2.6",
+    "@types/react-native-vector-icons": "^6.4.18",
     "@types/react-test-renderer": "^18.0.0",
     "babel-jest": "^29.6.3",
     "eslint": "^8.19.0",

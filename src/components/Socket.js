@@ -5,7 +5,7 @@ import PushNotification, {Importance} from 'react-native-push-notification';
 import PushNotificationIOS from '@react-native-community/push-notification-ios';
 import BackgroundTimer from 'react-native-background-timer';
 
-let socket;
+export let socket;
 
 export function connectSocket(userId) {
   // Connect to the socket server

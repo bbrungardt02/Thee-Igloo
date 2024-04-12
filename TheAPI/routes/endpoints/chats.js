@@ -1,9 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const {authenticateJWT} = require('../auth');
-const User = require('../../models/User');
 const Message = require('../../models/Message');
 const Conversation = require('../../models/Conversation');
+const multer = require('../../config/storage');
+const s3 = require('../../config/s3');
+const storage = require('../../config/storage');
 
 // endpoint to create a new chat room in the conversation collection
 
@@ -129,52 +131,27 @@ router.get(
   },
 );
 
-// S3 Bucket needed for this feature
-
-// // Configure multer for handling file uploads //! not used in front end yet
-
-// const path = require("path");
-// const multer = require("multer");
-// const mime = require("mime-types");
-
-// const storage = multer.diskStorage({
-//   destination: function (req, file, cb) {
-//     cb(null, "public");
-//   },
-//   filename: function (req, file, cb) {
-//     const name = req.params.id;
-//     cb(null, name + (path.extname(file.originalname) || ".png"));
-//   },
-// });
-
-// const upload = multer({ storage });
-
-// function getRandomString(length = 20) {
-//   const randomChars =
-//     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-//   let result = "";
-//   for (let i = 0; i < length; i++)
-//     result += randomChars.charAt(
-//       Math.floor(Math.random() * randomChars.length)
-//     );
-//   return result;
-// }
-
-// endpoint to fetch the messages of the conversation
+// endpoint to fetch the messages of the conversation by pagination
 
 router.get('/messages/:conversationId', authenticateJWT, async (req, res) => {
   try {
-    const {userId} = req.user; // Assuming the user ID is stored in req.user
+    const {userId} = req.user;
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
 
-    // fetch the conversation and populate the messages
     const conversation = await Conversation.findById(
       req.params.conversationId,
     ).populate({
       path: 'messages',
+      options: {
+        sort: {timestamp: -1}, // Sort messages by timestamp in descending order
+        skip: (page - 1) * limit,
+        limit: limit,
+      },
       populate: {
         path: 'userId',
         model: 'User',
-        select: 'name _id', // Only include the name and _id fields
+        select: 'name _id',
       },
     });
 
@@ -182,7 +159,6 @@ router.get('/messages/:conversationId', authenticateJWT, async (req, res) => {
       return res.status(404).json({message: 'Conversation not found'});
     }
 
-    // Mark all unread messages as read by the current user
     for (let message of conversation.messages) {
       if (!message.readBy.includes(userId)) {
         message.readBy.push(userId);
@@ -237,7 +213,7 @@ router.delete(
   },
 );
 
-// endpoint to delete all messages in conversation
+// endpoint to delete all messages in conversation //! not used in front end
 
 router.delete(
   '/messages/:conversationId',
@@ -259,5 +235,23 @@ router.delete(
     }
   },
 );
+
+router.post('/upload', storage.upload.single('file'), async (req, res) => {
+  console.log('Request file:', req.file); // Log the req.file object
+
+  try {
+    const file = req.file;
+    const uniqueName = storage.getImageName(file); // Generate a unique name for the file
+    console.log('Unique name:', uniqueName); // Log the unique name
+
+    const result = await s3.upload(file, 'chat', uniqueName); // Use the unique name as the S3 key
+    console.log('Upload result:', result); // Log the result of the upload
+
+    res.status(200).json({url: result.Location, type: file.mimetype});
+  } catch (error) {
+    console.log('Error uploading image: ', error);
+    res.status(500).json({message: 'Failed to upload image!'});
+  }
+});
 
 module.exports = router;

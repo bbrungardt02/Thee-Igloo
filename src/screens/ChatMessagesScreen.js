@@ -1,23 +1,17 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import {
   StyleSheet,
-  Text,
-  View,
-  ScrollView,
+  ActivityIndicator,
   KeyboardAvoidingView,
-  TextInput,
-  Pressable,
-  Image,
   SafeAreaView,
+  Alert,
+  Text,
+  FlatList,
 } from 'react-native';
 import React, {useContext, useEffect, useLayoutEffect, useRef} from 'react';
 import {UserType} from '../../UserContext';
-// import Entypo from 'react-native-vector-icons/Entypo';
-// import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import IonIcons from 'react-native-vector-icons/Ionicons';
 import {useRoute} from '@react-navigation/native';
 import {useNavigation, useTheme} from '@react-navigation/native';
-// import * as ImagePicker from 'react-native-image-picker';
 import {
   joinConversation,
   sendMessage,
@@ -26,6 +20,10 @@ import {
 } from '../components/Socket';
 import API from '../config/API';
 import {Platform} from 'react-native';
+import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
+import ChatInput from '../components/ChatInput';
+import ChatRender from '../components/ChatRender';
+import ChatHeader from '../components/ChatHeader';
 
 const ChatMessagesScreen = () => {
   const {userId, userName} = useContext(UserType);
@@ -33,30 +31,20 @@ const ChatMessagesScreen = () => {
   const [messages, setMessages] = React.useState([]);
   const route = useRoute();
   const {conversationId} = route.params;
-  // const [selectedImage, setSelectedImage] = React.useState('');
   const navigation = useNavigation();
   const [recipientsData, setRecipientsData] = React.useState([]);
   const isJoined = React.useRef(false);
   const [groupName, setGroupName] = React.useState('');
   const {colors} = useTheme();
-
-  const scrollViewRef = useRef(null);
-
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
-
-  const scrollToBottom = () => {
-    if (scrollViewRef.current) {
-      if (Platform.OS === 'ios') {
-        scrollViewRef.current.scrollToEnd({animated: false});
-      } else if (Platform.OS === 'android') {
-        setTimeout(() => {
-          scrollViewRef.current.scrollTo({y: 1000000, animated: false});
-        }, 100);
-      }
-    }
-  };
+  const [selectedImages, setSelectedImages] = React.useState([]);
+  const [selectedVideos, setSelectedVideos] = React.useState([]);
+  const [selectedAudios, setSelectedAudios] = React.useState([]);
+  const [imageData, setImageData] = React.useState([]);
+  const [videoData, setVideoData] = React.useState([]);
+  const [audioData, setAudioData] = React.useState([]);
+  const [uploadStatus, setUploadStatus] = React.useState('');
+  const [page, setPage] = React.useState(1);
+  const [loading, setLoading] = React.useState(false);
 
   useEffect(() => {
     if (!isJoined.current) {
@@ -71,19 +59,30 @@ const ChatMessagesScreen = () => {
     };
   }, [conversationId]); // Remove isJoined from the dependency array
 
-  const fetchMessages = async conversationId => {
+  const fetchMessages = async (conversationId, page) => {
+    setLoading(true);
     try {
-      const response = await API.get(`/chats/messages/${conversationId}`);
+      const response = await API.get(
+        `/chats/messages/${conversationId}?page=${page}`,
+      );
       if (response.status === 200) {
-        setMessages(response.data);
+        setMessages(prevMessages => [...prevMessages, ...response.data]);
+        setPage(prevPage => prevPage + 1);
       }
     } catch (error) {
       console.error('Error fetching messages', error);
     }
+    setLoading(false);
+  };
+
+  const loadMoreMessages = () => {
+    if (!loading) {
+      fetchMessages(conversationId, page);
+    }
   };
 
   useEffect(() => {
-    fetchMessages(conversationId);
+    fetchMessages(conversationId, 1);
   }, []);
 
   useEffect(() => {
@@ -93,12 +92,61 @@ const ChatMessagesScreen = () => {
   }, []);
 
   const handleSend = async () => {
-    // If message is an empty string, return immediately
-    if (!message.trim()) {
+    console.log('handleSend called'); // Log when handleSend is called
+
+    if (
+      !message.trim() &&
+      imageData.length === 0 &&
+      videoData.length === 0 &&
+      audioData.length === 0
+    ) {
       return;
     }
 
     try {
+      const uploadedImages = [];
+      const uploadedVideos = [];
+      const uploadedAudios = [];
+
+      const uploadMedia = async (mediaData, uploadedMedia) => {
+        const uploadPromises = mediaData.map(async data => {
+          setUploadStatus('Uploading...');
+          console.log('Uploading file', data); // Log the data object being uploaded
+
+          const uploadResponse = await API.post('/chats/upload', data, {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          });
+
+          console.log('Upload response', uploadResponse); // Log the upload response
+
+          if (uploadResponse.status === 200) {
+            uploadedMedia.push(uploadResponse.data.url);
+            setUploadStatus('Upload successful');
+            setTimeout(() => setUploadStatus(''), 2000); // Clear the status after 2 seconds
+          } else {
+            console.log('Failed to upload file', uploadResponse.data);
+            setUploadStatus('Upload failed');
+            setTimeout(() => setUploadStatus(''), 2000);
+          }
+        });
+
+        await Promise.all(uploadPromises);
+      };
+
+      if (imageData.length > 0) {
+        await uploadMedia(imageData, uploadedImages);
+      }
+
+      if (videoData.length > 0) {
+        await uploadMedia(videoData, uploadedVideos);
+      }
+
+      if (audioData.length > 0) {
+        await uploadMedia(audioData, uploadedAudios);
+      }
+
       const newMessage = {
         conversationId: conversationId,
         userId: {
@@ -106,47 +154,104 @@ const ChatMessagesScreen = () => {
           name: userName,
         },
         text: message,
+        images: uploadedImages,
+        videos: uploadedVideos,
+        audios: uploadedAudios,
         timestamp: new Date().toISOString(),
       };
-      console.log('USERNAME', userName);
+
+      console.log('Sending message', newMessage); // Log the message being sent
 
       sendMessage(newMessage);
-      // Clear the message input
       setMessage('');
+      setSelectedImages([]);
+      setSelectedVideos([]);
+      setSelectedAudios([]);
+      setImageData([]);
+      setVideoData([]);
+      setAudioData([]);
     } catch (error) {
       console.log('error sending message', error);
+      setUploadStatus('Upload failed');
+      setTimeout(() => setUploadStatus(''), 2000);
     }
   };
 
-  const formatTime = time => {
-    const options = {hour: 'numeric', minute: 'numeric'};
-    return new Date(time).toLocaleString([], options);
+  const handleSendMedia = () => {
+    Alert.alert(
+      'Select an option',
+      '',
+      [
+        {
+          text: 'Take Photo or Record',
+          onPress: () => {
+            launchCamera({mediaType: 'mixed'}, response => {
+              if (response.didCancel) {
+                console.log('User cancelled media picker');
+              } else if (response.errorCode) {
+                console.log('MediaPicker Error: ', response.errorMessage);
+              } else {
+                let formData = new FormData();
+                formData.append('file', {
+                  uri: response.assets[0].uri,
+                  type: response.assets[0].type,
+                  name: response.assets[0].fileName,
+                });
+
+                if (response.assets[0].type.startsWith('image/')) {
+                  setSelectedImages([
+                    ...selectedImages,
+                    response.assets[0].uri,
+                  ]);
+                  setImageData([...imageData, formData]);
+                } else if (response.assets[0].type.startsWith('video/')) {
+                  setSelectedVideos([
+                    ...selectedVideos,
+                    response.assets[0].uri,
+                  ]);
+                  setVideoData([...videoData, formData]);
+                }
+              }
+            });
+          },
+        },
+        {
+          text: 'Choose from Library',
+          onPress: () => {
+            launchImageLibrary({mediaType: 'mixed'}, response => {
+              if (response.didCancel) {
+                console.log('User cancelled media picker');
+              } else if (response.errorCode) {
+                console.log('MediaPicker Error: ', response.errorMessage);
+              } else {
+                let formData = new FormData();
+                formData.append('file', {
+                  uri: response.assets[0].uri,
+                  type: response.assets[0].type,
+                  name: response.assets[0].fileName,
+                });
+
+                if (response.assets[0].type.startsWith('image/')) {
+                  setSelectedImages([
+                    ...selectedImages,
+                    response.assets[0].uri,
+                  ]);
+                  setImageData([...imageData, formData]);
+                } else if (response.assets[0].type.startsWith('video/')) {
+                  setSelectedVideos([
+                    ...selectedVideos,
+                    response.assets[0].uri,
+                  ]);
+                  setVideoData([...videoData, formData]);
+                }
+              }
+            });
+          },
+        },
+      ],
+      {cancelable: true},
+    );
   };
-
-  // S3 bucket needed for ImagePicker
-
-  // const pickImage = () => {
-  //   ImagePicker.launchImageLibrary(
-  //     {
-  //       mediaType: 'photo',
-  //       includeBase64: false,
-  //       maxHeight: 200,
-  //       maxWidth: 200,
-  //     },
-  //     response => {
-  //       console.log(response);
-  //       if (response.didCancel) {
-  //         console.log('User cancelled image picker');
-  //       } else if (response.error) {
-  //         console.log('ImagePicker Error: ', response.error);
-  //       } else {
-  //         const source = {uri: response.assets[0].uri};
-  //         console.log(source);
-  //         setSelectedImage(response.assets[0].uri); // only set the selected image URI to state
-  //       }
-  //     },
-  //   );
-  // };
 
   useEffect(() => {
     const fetchRecipientsData = async () => {
@@ -176,39 +281,12 @@ const ChatMessagesScreen = () => {
     navigation.setOptions({
       headerTitle: '',
       headerLeft: () => (
-        <View style={{flexDirection: 'row', alignItems: 'center', gap: 10}}>
-          <IonIcons
-            onPress={() => navigation.goBack()}
-            name="arrow-back"
-            size={24}
-            color={colors.text}
-          />
-
-          <View style={{flexDirection: 'row', alignItems: 'center'}}>
-            {recipientsData.map((recipient, index) => (
-              <Image
-                key={index}
-                style={{
-                  width: recipientsData.length > 1 ? 17 : 30,
-                  height: recipientsData.length > 1 ? 17 : 30,
-                  borderRadius: recipientsData.length > 1 ? 5 : 15,
-                  resizeMode: 'cover',
-                  left: index * 5,
-                }}
-                source={{uri: recipient.image}}
-              />
-            ))}
-            <Text
-              style={{
-                marginLeft: recipientsData.length > 1 ? 15 : 5,
-                fontSize: 15,
-                fontWeight: 'bold',
-                color: colors.text,
-              }}>
-              {groupName ? groupName : recipientsData[0]?.name}
-            </Text>
-          </View>
-        </View>
+        <ChatHeader
+          navigation={navigation}
+          recipientsData={recipientsData}
+          groupName={groupName}
+          colors={colors}
+        />
       ),
     });
   }, [recipientsData, groupName]);
@@ -218,170 +296,29 @@ const ChatMessagesScreen = () => {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       keyboardVerticalOffset={90}
       style={{flex: 1}}>
-      <ScrollView
-        ref={scrollViewRef}
-        contentContainerStyle={{flexGrow: 1}}
-        onContentSizeChange={scrollToBottom}>
-        {messages.map((item, index) => {
-          if (item.text) {
-            return (
-              <Pressable
-                key={index}
-                style={[
-                  item?.userId?._id === userId
-                    ? {
-                        alignSelf: 'flex-end',
-                        backgroundColor: '#D0E7F9',
-                        padding: 8,
-                        maxWidth: '60%',
-                        borderRadius: 7,
-                        margin: 10,
-                      }
-                    : {
-                        alignSelf: 'flex-start',
-                        backgroundColor: 'white',
-                        padding: 8,
-                        maxWidth: '60%',
-                        borderRadius: 7,
-                        margin: 10,
-                      },
-                ]}>
-                <Text style={{fontSize: 13, textAlign: 'left'}}>
-                  {item?.text}
-                </Text>
-                <Text style={{fontSize: 10, color: 'gray'}}>
-                  Sent by: {item?.userId?.name}
-                </Text>
-                <Text
-                  style={{
-                    textAlign: 'right',
-                    fontSize: 9,
-                    color: 'gray',
-                    marginTop: 5,
-                  }}>
-                  {formatTime(item.timestamp)}
-                </Text>
-              </Pressable>
-            );
-          }
-
-          if (item.images && item.images.length > 0) {
-            return (
-              <Pressable
-                key={index}
-                style={[
-                  item?.userId?._id === userId
-                    ? {
-                        alignSelf: 'flex-end',
-                        backgroundColor: '#D0E7F9',
-                        padding: 8,
-                        maxWidth: '60%',
-                        borderRadius: 7,
-                        margin: 10,
-                      }
-                    : {
-                        alignSelf: 'flex-start',
-                        backgroundColor: 'white',
-                        padding: 8,
-                        maxWidth: '60%',
-                        borderRadius: 7,
-                        margin: 10,
-                      },
-                ]}>
-                <View>
-                  <Image
-                    style={{
-                      width: 200,
-                      height: 200,
-                      resizeMode: 'cover',
-                    }}
-                    source={{uri: item?.images[0]}}
-                  />
-                  <Text
-                    style={{
-                      textAlign: 'right',
-                      fontSize: 9,
-                      color: 'gray',
-                      position: 'absolute',
-                      marginTop: 5,
-                      right: 10,
-                      bottom: 7,
-                    }}>
-                    {formatTime(item.timestamp)}
-                  </Text>
-                </View>
-              </Pressable>
-            );
-          }
-        })}
-      </ScrollView>
-
-      {/* Image to be sent */}
-      {/* {selectedImage ? (
-        <View style={{alignItems: 'center', margin: 10}}>
-          <Image
-            source={{uri: selectedImage}}
-            style={{width: 200, height: 200}}
-          />
-          <Text>Selected Image</Text>
-          <Pressable onPress={() => setSelectedImage('')}>
-            <Text>Remove Image</Text>
-          </Pressable>
-        </View>
-      ) : null} */}
+      <FlatList
+        data={messages}
+        keyExtractor={(item, index) => index.toString()} // Use index as the key
+        renderItem={({item}) => <ChatRender item={item} userId={userId} />}
+        inverted // This will start the list from the bottom
+        onEndReached={loadMoreMessages} // Call 'loadMoreMessages' when the end of the list is reached
+        onEndReachedThreshold={0.1} // Call 'loadMoreMessages' when the end of the list is within 10% of the viewport
+        ListFooterComponent={
+          loading ? <ActivityIndicator size="large" color="#0000ff" /> : null
+        }
+      />
 
       <SafeAreaView>
-        <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            paddingHorizontal: 10,
-            paddingVertical: 10,
-            borderTopWidth: 0.25,
-            borderTopColor: 'F8F8F8',
-          }}>
-          <TextInput
-            value={message}
-            onChangeText={text => setMessage(text)}
-            style={{
-              flex: 1,
-              height: 40,
-              borderWidth: 1,
-              borderColor: '#dddddd',
-              borderRadius: 20,
-              paddingHorizontal: 10,
-              color: colors.text,
-            }}
-            placeholder="Igloo Message"
-          />
-
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              gap: 7,
-              marginHorizontal: 8,
-            }}>
-            {/* <FontAwesome
-              // onPress={pickImage}
-              name="camera"
-              size={24}
-              color="gray"
-            /> */}
-            {/* <Entypo name="mic" size={24} color="gray" /> */}
-          </View>
-
-          <Pressable
-            onPress={() => handleSend()}
-            style={{
-              backgroundColor: '#007bff',
-              paddingVertical: 8,
-              paddingHorizontal: 12,
-              borderRadius: 20,
-            }}>
-            <Text style={{color: 'white', fontWeight: 'bold'}}>Send</Text>
-          </Pressable>
-        </View>
+        <ChatInput
+          handleSend={handleSend}
+          message={message}
+          setMessage={setMessage}
+          handleSendMedia={handleSendMedia}
+          selectedImages={selectedImages}
+          selectedVideos={selectedVideos}
+          selectedAudios={selectedAudios}
+        />
+        <Text>{uploadStatus}</Text>
       </SafeAreaView>
     </KeyboardAvoidingView>
   );

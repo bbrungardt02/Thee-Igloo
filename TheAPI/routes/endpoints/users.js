@@ -7,6 +7,7 @@ const Message = require('../../models/Message');
 const Conversation = require('../../models/Conversation');
 const {authenticateJWT, createToken} = require('../auth');
 const jwt = require('jsonwebtoken');
+const Joi = require('joi');
 
 router.post('/token', (req, res) => {
   const refreshToken = req.body.refreshToken;
@@ -27,8 +28,24 @@ router.post('/token', (req, res) => {
 });
 
 // endpoint for registering a new user
+
+const registerSchema = Joi.object({
+  name: Joi.string().max(255).required(),
+  email: Joi.string().email().max(255).required(),
+  password: Joi.string().min(6).required(),
+  image: Joi.string().required(),
+});
+
 router.post('/register', async (req, res) => {
   const {name, email, password, image} = req.body;
+
+  // Validate the request data
+  const {error} = registerSchema.validate({name, email, password, image});
+  if (error) {
+    return res
+      .status(400)
+      .json({message: 'Invalid data', error: error.details});
+  }
 
   // Hash the password
   const hashedPassword = await bcrypt.hash(password, saltRounds);
@@ -134,34 +151,59 @@ router.post('/logout', authenticateJWT, (req, res) => {
   }
 });
 
-// Endpoint to update user details //! not used in front end yet
-
-router.put('/update/:userId', authenticateJWT, async (req, res) => {
-  const userId = req.params.userId;
-  const {name, email, password, image} = req.body;
+router.get('/me', authenticateJWT, async (req, res) => {
+  const userId = req.user.userId;
 
   try {
-    const user = await User.findById(userId);
+    const user = await User.findById(userId).select('-password');
     if (!user) {
       return res.status(404).json({message: 'User not found'});
     }
 
-    if (name) {
-      user.name = name;
-    }
-    if (email) {
-      user.email = email;
-    }
-    if (password) {
-      user.password = password;
-    }
-    if (image) {
-      user.image = image;
+    res.json(user);
+  } catch (error) {
+    res.status(500).json({message: 'Error retrieving user', error});
+  }
+});
+
+// Endpoint to update user details
+
+const schema = Joi.object({
+  name: Joi.string().max(255),
+  email: Joi.string().email().max(255),
+  image: Joi.string(),
+});
+
+router.put('/update/:userId', authenticateJWT, async (req, res) => {
+  const userId = req.params.userId;
+  const {name, email, image} = req.body;
+
+  // Validate the request data
+  const {error} = schema.validate({name, email, image});
+  if (error) {
+    return res
+      .status(400)
+      .json({message: 'Invalid data', error: error.details});
+  }
+
+  // Create an update object with only the provided fields
+  const update = {};
+  if (name) update.name = name;
+  if (email) update.email = email;
+  if (image) update.image = image;
+
+  try {
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      {$set: update},
+      {new: true, runValidators: true},
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({message: 'User not found'});
     }
 
-    await user.save();
-
-    res.json({message: 'User updated successfully', user});
+    res.json({message: 'User updated successfully', user: updatedUser});
   } catch (error) {
     res.status(500).json({message: 'Error updating user', error});
   }
