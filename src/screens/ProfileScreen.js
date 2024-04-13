@@ -148,11 +148,9 @@ const ProfileScreen = () => {
         </View>
       )}
 
-      <Button
-        style={styles.reportIssue}
-        title="Report Issue"
-        onPress={sendEmail}
-      />
+      <View style={styles.reportIssue}>
+        <Button title="Report Issue" onPress={sendEmail} />
+      </View>
     </ScrollView>
   );
 };

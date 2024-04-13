@@ -176,7 +176,7 @@ const ChatMessagesScreen = () => {
     }
   };
 
-  const handleSendMedia = () => {
+  const handleSelectMedia = () => {
     // Clear the state so that multiple images/video are not sent in the same message
     //TODO This can be removed once sending multiple images is fully supported on UI and endpoint
     setSelectedImages([]);
@@ -323,7 +323,7 @@ const ChatMessagesScreen = () => {
           handleSend={handleSend}
           message={message}
           setMessage={setMessage}
-          handleSendMedia={handleSendMedia}
+          handleSelectMedia={handleSelectMedia}
           selectedImages={selectedImages}
           selectedVideos={selectedVideos}
           selectedAudios={selectedAudios}

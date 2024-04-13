@@ -8,7 +8,7 @@ const ChatInput = ({
   handleSend,
   message,
   setMessage,
-  handleSendMedia,
+  handleSelectMedia,
   selectedImages,
   selectedVideos,
   selectedAudios,
@@ -68,13 +68,14 @@ const ChatInput = ({
           name="camera"
           size={24}
           color="gray"
-          onPress={handleSendMedia}
+          onPress={handleSelectMedia}
         />
+        {/* //TODO Might need to use swift to record audios to be sent */}
         {/* <FontAwesome
           name="microphone"
           size={24}
           color="gray"
-          onPress={() => handleSendMedia('audio')}
+          onPress={() => handleSelectMedia('audio')}
         /> */}
       </View>
 
