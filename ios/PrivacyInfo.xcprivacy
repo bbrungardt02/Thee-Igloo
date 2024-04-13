@@ -6,10 +6,18 @@
 	<array>
 		<dict>
 			<key>NSPrivacyAccessedAPIType</key>
+			<string>NSPrivacyAccessedAPICategoryDiskSpace</string>
+			<key>NSPrivacyAccessedAPITypeReasons</key>
+			<array>
+				<string>85F4.1</string>
+			</array>
+		</dict>
+		<dict>
+			<key>NSPrivacyAccessedAPIType</key>
 			<string>NSPrivacyAccessedAPICategoryFileTimestamp</string>
 			<key>NSPrivacyAccessedAPITypeReasons</key>
 			<array>
-				<string>App requires access to file timestamps for DDA9.1.</string>
+				<string>DDA9.1</string>
 			</array>
 		</dict>
 		<dict>
@@ -17,7 +25,7 @@
 			<string>NSPrivacyAccessedAPICategorySystemBootTime</string>
 			<key>NSPrivacyAccessedAPITypeReasons</key>
 			<array>
-				<string>App requires access to the system boot time for 35F9.1.</string>
+				<string>35F9.1</string>
 			</array>
 		</dict>
 		<dict>
@@ -25,7 +33,7 @@
 			<string>NSPrivacyAccessedAPICategoryUserDefaults</string>
 			<key>NSPrivacyAccessedAPITypeReasons</key>
 			<array>
-				<string>App requires access to user defaults for CA92.1.</string>
+				<string>CA92.1</string>
 			</array>
 		</dict>
 	</array>
