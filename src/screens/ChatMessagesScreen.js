@@ -7,8 +7,9 @@ import {
   Alert,
   Text,
   FlatList,
+  View,
 } from 'react-native';
-import React, {useContext, useEffect, useLayoutEffect, useRef} from 'react';
+import React, {useContext, useEffect, useLayoutEffect} from 'react';
 import {UserType} from '../../UserContext';
 import {useRoute} from '@react-navigation/native';
 import {useNavigation, useTheme} from '@react-navigation/native';
@@ -44,6 +45,7 @@ const ChatMessagesScreen = () => {
   const [audioData, setAudioData] = React.useState([]);
   const [uploadStatus, setUploadStatus] = React.useState('');
   const [page, setPage] = React.useState(1);
+  const [hasMore, setHasMore] = React.useState(true);
   const [loading, setLoading] = React.useState(false);
 
   useEffect(() => {
@@ -67,7 +69,11 @@ const ChatMessagesScreen = () => {
       );
       if (response.status === 200) {
         setMessages(prevMessages => [...prevMessages, ...response.data]);
-        setPage(prevPage => prevPage + 1);
+        if (response.data.length === 0) {
+          setHasMore(false);
+        } else {
+          setPage(prevPage => prevPage + 1);
+        }
       }
     } catch (error) {
       console.error('Error fetching messages', error);
@@ -76,7 +82,7 @@ const ChatMessagesScreen = () => {
   };
 
   const loadMoreMessages = () => {
-    if (!loading) {
+    if (!loading && hasMore) {
       fetchMessages(conversationId, page);
     }
   };
@@ -87,13 +93,11 @@ const ChatMessagesScreen = () => {
 
   useEffect(() => {
     onMessageReceived(message => {
-      setMessages(prevMessages => [...prevMessages, message]);
+      setMessages(prevMessages => [message, ...prevMessages]);
     });
   }, []);
 
   const handleSend = async () => {
-    console.log('handleSend called'); // Log when handleSend is called
-
     if (
       !message.trim() &&
       imageData.length === 0 &&
@@ -111,15 +115,12 @@ const ChatMessagesScreen = () => {
       const uploadMedia = async (mediaData, uploadedMedia) => {
         const uploadPromises = mediaData.map(async data => {
           setUploadStatus('Uploading...');
-          console.log('Uploading file', data); // Log the data object being uploaded
 
           const uploadResponse = await API.post('/chats/upload', data, {
             headers: {
               'Content-Type': 'multipart/form-data',
             },
           });
-
-          console.log('Upload response', uploadResponse); // Log the upload response
 
           if (uploadResponse.status === 200) {
             uploadedMedia.push(uploadResponse.data.url);
@@ -160,8 +161,6 @@ const ChatMessagesScreen = () => {
         timestamp: new Date().toISOString(),
       };
 
-      console.log('Sending message', newMessage); // Log the message being sent
-
       sendMessage(newMessage);
       setMessage('');
       setSelectedImages([]);
@@ -178,6 +177,13 @@ const ChatMessagesScreen = () => {
   };
 
   const handleSendMedia = () => {
+    // Clear the state so that multiple images/video are not sent in the same message
+    //TODO This can be removed once sending multiple images is fully supported on UI and endpoint
+    setSelectedImages([]);
+    setSelectedVideos([]);
+    setImageData([]);
+    setVideoData([]);
+    //TODO ---------------
     Alert.alert(
       'Select an option',
       '',
@@ -304,7 +310,11 @@ const ChatMessagesScreen = () => {
         onEndReached={loadMoreMessages} // Call 'loadMoreMessages' when the end of the list is reached
         onEndReachedThreshold={0.1} // Call 'loadMoreMessages' when the end of the list is within 10% of the viewport
         ListFooterComponent={
-          loading ? <ActivityIndicator size="large" color="#0000ff" /> : null
+          loading ? (
+            <View style={styles.activityIndicatorContainer}>
+              <ActivityIndicator size="large" color="#0000ff" />
+            </View>
+          ) : null
         }
       />
 
@@ -318,7 +328,7 @@ const ChatMessagesScreen = () => {
           selectedVideos={selectedVideos}
           selectedAudios={selectedAudios}
         />
-        <Text>{uploadStatus}</Text>
+        <Text style={styles.uploadStatus}>{uploadStatus}</Text>
       </SafeAreaView>
     </KeyboardAvoidingView>
   );
@@ -326,4 +336,17 @@ const ChatMessagesScreen = () => {
 
 export default ChatMessagesScreen;
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  activityIndicatorContainer: {
+    padding: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  uploadStatus: {
+    color: '#000',
+    fontSize: 16,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginTop: 10,
+  },
+});

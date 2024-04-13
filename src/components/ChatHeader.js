@@ -1,16 +1,19 @@
 import React from 'react';
-import {View, Text, Image} from 'react-native';
+import {View, Text, Image, Pressable} from 'react-native';
 import IonIcons from 'react-native-vector-icons/Ionicons';
 
 const ChatHeader = ({navigation, recipientsData, groupName, colors}) => {
   return (
     <View style={{flexDirection: 'row', alignItems: 'center', gap: 10}}>
-      <IonIcons
-        onPress={() => navigation.goBack()}
-        name="arrow-back"
-        size={24}
-        color={colors.text}
-      />
+      <Pressable onPress={() => navigation.goBack()}>
+        {({pressed}) => (
+          <IonIcons
+            name="arrow-back"
+            size={24}
+            color={pressed ? 'rgba(0, 0, 0, 0.1)' : colors.text}
+          />
+        )}
+      </Pressable>
 
       <View style={{flexDirection: 'row', alignItems: 'center'}}>
         {recipientsData.map((recipient, index) => (

@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import {StyleSheet, Text, View, ScrollView} from 'react-native';
+import {StyleSheet, Text, View, ScrollView, Pressable} from 'react-native';
 import React, {useLayoutEffect, useEffect} from 'react';
 import {useNavigation, useTheme} from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -19,13 +19,17 @@ const HomeScreen = () => {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerLeft: () => (
-        <MaterialIcons
+        <Pressable
           onPress={() => navigation.navigate('Profile')}
-          name="person-outline"
-          size={24}
-          color={colors.text}
-          style={{marginLeft: 10}}
-        />
+          style={{marginLeft: 10}}>
+          {({pressed}) => (
+            <MaterialIcons
+              name="person-outline"
+              size={24}
+              color={pressed ? 'rgba(0, 0, 0, 0.1)' : colors.text}
+            />
+          )}
+        </Pressable>
       ),
       headerTitle: () => (
         <Text style={{fontSize: 16, fontWeight: 'bold', color: colors.text}}>
@@ -34,18 +38,24 @@ const HomeScreen = () => {
       ),
       headerRight: () => (
         <View style={{flexDirection: 'row', alignItems: 'center', gap: 8}}>
-          <Ionicons
-            onPress={() => navigation.navigate('Chats')}
-            name="chatbox-ellipses-outline"
-            size={24}
-            color={colors.text}
-          />
-          <MaterialIcons
-            onPress={() => navigation.navigate('Friend Requests')}
-            name="people-outline"
-            size={24}
-            color={colors.text}
-          />
+          <Pressable onPress={() => navigation.navigate('Chats')}>
+            {({pressed}) => (
+              <Ionicons
+                name="chatbox-ellipses-outline"
+                size={24}
+                color={pressed ? 'rgba(0, 0, 0, 0.1)' : colors.text}
+              />
+            )}
+          </Pressable>
+          <Pressable onPress={() => navigation.navigate('Friend Requests')}>
+            {({pressed}) => (
+              <MaterialIcons
+                name="people-outline"
+                size={24}
+                color={pressed ? 'rgba(0, 0, 0, 0.1)' : colors.text}
+              />
+            )}
+          </Pressable>
         </View>
       ),
     });

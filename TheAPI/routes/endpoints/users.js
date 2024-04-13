@@ -32,7 +32,7 @@ router.post('/token', (req, res) => {
 const registerSchema = Joi.object({
   name: Joi.string().max(255).required(),
   email: Joi.string().email().max(255).required(),
-  password: Joi.string().min(6).required(),
+  password: Joi.string().required(),
   image: Joi.string().required(),
 });
 

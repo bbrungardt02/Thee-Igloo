@@ -137,7 +137,7 @@ router.get('/messages/:conversationId', authenticateJWT, async (req, res) => {
   try {
     const {userId} = req.user;
     const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 10;
+    const limit = parseInt(req.query.limit) || 9;
 
     const conversation = await Conversation.findById(
       req.params.conversationId,

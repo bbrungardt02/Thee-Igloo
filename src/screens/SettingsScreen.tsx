@@ -5,8 +5,11 @@ import {
   TouchableOpacity,
   TextInput,
   View,
+  ScrollView,
   Image,
   ActivityIndicator,
+  Modal,
+  Pressable,
 } from 'react-native';
 import React from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -28,6 +31,7 @@ const SettingsScreen = () => {
   const navigation = useNavigation<NavigationProp<RootParamList>>();
   const userContext = React.useContext(UserType);
   const {colors} = useTheme();
+  const [modalVisible, setModalVisible] = React.useState(false);
   // Check if userContext is defined before destructuring userId
   const userId = userContext ? userContext.userId : null;
   const [name, setName] = React.useState('');
@@ -149,6 +153,10 @@ const SettingsScreen = () => {
         if (imageUrl) {
           setImage(imageUrl);
         }
+        // Reset the state of each input and select
+        setNewName('');
+        setNewEmail('');
+        setNewImage('');
       } else {
         Alert.alert('Error', 'Error updating user');
       }
@@ -159,10 +167,12 @@ const SettingsScreen = () => {
       });
       console.error(error);
     }
-    setIsLoading(false);
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 2000);
   };
 
-  const logout = async () => {
+  const logout = React.useCallback(async () => {
     Alert.alert('Logout', 'Are you sure you want to logout?', [
       {
         text: 'Cancel',
@@ -198,7 +208,23 @@ const SettingsScreen = () => {
         },
       },
     ]);
-  };
+  }, [navigation]);
+
+  React.useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <Pressable onPress={logout} style={{marginRight: 10}}>
+          {({pressed}) => (
+            <MaterialIcons
+              name="logout"
+              size={24}
+              color={pressed ? 'rgba(0, 0, 0, 0.1)' : colors.text}
+            />
+          )}
+        </Pressable>
+      ),
+    });
+  }, [colors.text, logout, navigation]);
 
   const deleteAccount = async (userId: string) => {
     Alert.alert('PERMANENTLY DELETE ACCOUNT', 'Are you sure?', [
@@ -240,58 +266,120 @@ const SettingsScreen = () => {
 
   return (
     <View style={styles.container}>
-      {isLoading ? <ActivityIndicator size="large" color="#0000ff" /> : null}
-      <Text>{name}</Text>
-      <Text>{email}</Text>
-      {image ? <Image source={{uri: image}} style={styles.image} /> : null}
-      <TextInput
-        style={styles.textInput}
-        value={newName}
-        onChangeText={setNewName}
-        placeholder="Name"
-      />
-      <TextInput
-        style={styles.textInput}
-        value={newEmail}
-        onChangeText={setNewEmail}
-        placeholder="Email"
-      />
-      {newImage ? (
-        <Image source={{uri: newImage}} style={styles.image} />
-      ) : (
-        <Text>No image selected</Text>
-      )}
-      <TouchableOpacity style={styles.button} onPress={selectImage}>
-        <Text style={styles.buttonText}>Select Image</Text>
-      </TouchableOpacity>
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => {
-          if (userId) {
-            updateUserDetails(userId, newName, newEmail, newImage);
-          } else {
-            Alert.alert('Error', 'User ID is null');
-          }
-        }}>
-        <Text style={styles.buttonText}>Update Details</Text>
-      </TouchableOpacity>
-      <MaterialIcons
-        onPress={logout}
-        name="logout"
-        size={24}
-        color={colors.text}
-      />
-      <TouchableOpacity
-        style={styles.deleteButton}
-        onPress={() => {
-          if (userId) {
-            deleteAccount(userId);
-          } else {
-            Alert.alert('Error', 'User ID is null');
-          }
-        }}>
-        <Text style={styles.deleteButtonText}>Delete Account</Text>
-      </TouchableOpacity>
+      {isLoading ? (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size={'large'} color="#0000ff" />
+        </View>
+      ) : null}
+      <ScrollView contentContainerStyle={styles.scrollContainer}>
+        <Text style={[styles.nameText, {color: colors.text}]}>{name}</Text>
+        <Text style={[styles.emailText, {color: colors.text}]}>{email}</Text>
+        {image ? (
+          <TouchableOpacity onPress={() => setModalVisible(true)}>
+            <Image source={{uri: image}} style={styles.image} />
+          </TouchableOpacity>
+        ) : null}
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalVisible}
+          onRequestClose={() => {
+            setModalVisible(!modalVisible);
+          }}>
+          <View
+            style={{
+              flex: 1,
+              backgroundColor: 'rgba(0, 0, 0, 0.55)',
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}>
+            <Image
+              style={{width: '100%', height: '100%', resizeMode: 'contain'}}
+              source={{uri: image}}
+            />
+            <Pressable
+              style={{position: 'absolute', top: 50, right: 20}}
+              onPress={() => setModalVisible(false)}>
+              <Text style={{color: 'white', fontSize: 30}}>X</Text>
+            </Pressable>
+          </View>
+        </Modal>
+        <TextInput
+          style={styles.textInput}
+          value={newName}
+          onChangeText={setNewName}
+          placeholder="Name"
+        />
+        <TextInput
+          style={styles.textInput}
+          value={newEmail}
+          onChangeText={setNewEmail}
+          placeholder="Email"
+        />
+        {newImage ? (
+          <View style={styles.imageContainer}>
+            <Image source={{uri: newImage}} style={styles.selectedImage} />
+            <TouchableOpacity
+              style={styles.deselectButton}
+              onPress={() => setNewImage('')}>
+              <Text style={styles.deselectButtonText}>X</Text>
+            </TouchableOpacity>
+          </View>
+        ) : (
+          <Text style={[styles.noImageText, {color: colors.text}]}>
+            No image selected
+          </Text>
+        )}
+        <Pressable
+          style={({pressed}) => [
+            {
+              backgroundColor: pressed ? '#85a3b2' : '#ADD8E6',
+            },
+            styles.selectImageButton,
+          ]}
+          onPress={selectImage}>
+          <Text style={styles.selectImageButtonText}>Select Image</Text>
+        </Pressable>
+        <Pressable
+          style={({pressed}) => [
+            {
+              backgroundColor: pressed ? '#2a9d8f' : '#34C759',
+            },
+            styles.updateDetailsButton,
+          ]}
+          onPress={() => {
+            if (userId) {
+              updateUserDetails(userId, newName, newEmail, newImage);
+            } else {
+              Alert.alert('Error', 'User ID is null');
+            }
+          }}>
+          <Text style={[styles.updateDetailsButtonText, {color: colors.text}]}>
+            Update Details
+          </Text>
+        </Pressable>
+        <Text style={styles.warningText}>
+          Warning: This action will permanently delete your account.
+        </Text>
+        <Pressable
+          style={({pressed}) => [
+            {
+              backgroundColor: pressed ? '#cc0000' : '#ff0000',
+            },
+            styles.deleteButton,
+          ]}
+          onPress={() => {
+            if (userId) {
+              deleteAccount(userId);
+            } else {
+              Alert.alert('Error', 'User ID is null');
+            }
+          }}>
+          <Text style={[styles.deleteButtonText, {color: colors.text}]}>
+            Delete Account
+          </Text>
+        </Pressable>
+      </ScrollView>
     </View>
   );
 };
@@ -301,38 +389,114 @@ export default SettingsScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  scrollContainer: {
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+  },
+  loadingContainer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 20,
+  },
+  nameText: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 10,
+    paddingTop: 20,
+  },
+  emailText: {
+    fontSize: 16,
+    marginBottom: 10,
+  },
+  image: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    marginBottom: 20,
   },
   textInput: {
     height: 40,
     borderColor: 'gray',
     borderWidth: 1,
-    width: '100%',
+    width: '85%',
     marginBottom: 20,
-    paddingLeft: 10,
+    textAlign: 'center',
   },
-  image: {
+  noImageText: {
+    fontSize: 16,
+    color: '#000',
+    marginBottom: 10,
+  },
+  selectedImage: {
     width: 100,
     height: 100,
+    borderRadius: 50,
     marginBottom: 20,
   },
-  button: {
-    backgroundColor: '#007BFF',
-    padding: 10,
+  imageContainer: {
+    position: 'relative',
+    marginBottom: 20,
+  },
+  deselectButton: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    backgroundColor: '#fff',
+    borderRadius: 15,
+    width: 30,
+    height: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  deselectButtonText: {
+    color: 'red',
+    fontWeight: 'bold',
+    fontSize: 20,
+  },
+  selectImageButton: {
+    paddingVertical: 5,
+    paddingHorizontal: 20,
     borderRadius: 5,
     marginBottom: 20,
+    alignItems: 'center',
   },
-  buttonText: {
-    color: '#FFFFFF',
+  selectImageButtonText: {
+    color: '#000',
+    fontSize: 14,
+  },
+  updateDetailsButton: {
+    paddingVertical: 15,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+    marginBottom: 20,
+    width: '75%',
+    alignItems: 'center',
+  },
+  updateDetailsButtonText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  warningText: {
+    color: 'red',
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginTop: 150,
+    marginBottom: 10,
   },
   deleteButton: {
-    backgroundColor: '#ff0000',
-    padding: 10,
+    marginBottom: 200,
+    paddingVertical: 15,
+    paddingHorizontal: 20,
     borderRadius: 5,
+    width: '90%',
+    alignItems: 'center',
   },
   deleteButtonText: {
-    color: '#ffffff',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });

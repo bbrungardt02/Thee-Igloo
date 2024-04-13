@@ -1,11 +1,11 @@
 import {
-  ScrollView,
   View,
   Text,
   StyleSheet,
   TouchableOpacity,
+  Pressable,
 } from 'react-native';
-import React, {useContext, useEffect, useLayoutEffect} from 'react';
+import React, {useContext, useLayoutEffect} from 'react';
 import {UserType} from '../../UserContext';
 import {
   useNavigation,
@@ -25,13 +25,16 @@ const ChatsScreen = () => {
   const {colors} = useTheme();
 
   const HeaderRight = ({onPress}) => (
-    <Icon
-      name="add-circle-outline"
-      size={30}
-      color={colors.text}
-      style={styles.iconStyle}
-      onPress={onPress}
-    />
+    <Pressable onPress={onPress}>
+      {({pressed}) => (
+        <Icon
+          name="add-circle-outline"
+          size={30}
+          color={pressed ? 'rgba(0, 0, 0, 0.1)' : colors.text}
+          style={styles.iconStyle}
+        />
+      )}
+    </Pressable>
   );
 
   useLayoutEffect(() => {

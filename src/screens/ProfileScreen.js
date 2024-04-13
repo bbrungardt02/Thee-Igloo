@@ -10,11 +10,9 @@ import {
   ScrollView,
 } from 'react-native';
 import React, {useEffect, useContext} from 'react';
-import * as Keychain from 'react-native-keychain';
 import {useNavigation, useTheme} from '@react-navigation/native';
 import {UserType} from '../../UserContext';
 import API from '../config/API';
-import {socket} from '../components/Socket';
 import {openComposer} from 'react-native-email-link';
 import Toast from 'react-native-toast-message';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -40,44 +38,6 @@ const ProfileScreen = () => {
     fetchFriends();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  // const deleteAccount = async userId => {
-  //   Alert.alert('PERMANENTLY DELETE ACCOUNT', 'Are you sure?', [
-  //     {
-  //       text: 'Cancel',
-  //       onPress: () => console.log('Cancel Pressed'),
-  //       style: 'cancel',
-  //     },
-  //     {
-  //       text: 'Confirm',
-  //       style: 'destructive',
-  //       onPress: async () => {
-  //         try {
-  //           // Disconnect the user from the socket
-  //           if (socket) {
-  //             socket.disconnect();
-  //           }
-
-  //           // Send a request to the delete endpoint
-  //           const response = await API.delete(`/users/delete/${userId}`);
-  //           if (response.status !== 200) {
-  //             throw new Error('Error deleting account');
-  //           }
-
-  //           // Clear user credentials from Keychain
-  //           await Keychain.resetGenericPassword();
-
-  //           navigation.reset({
-  //             index: 0,
-  //             routes: [{name: 'Login'}],
-  //           });
-  //         } catch (error) {
-  //           Alert.alert('Error', 'Error deleting account');
-  //         }
-  //       },
-  //     },
-  //   ]);
-  // };
 
   const removeFriend = async friendId => {
     Alert.alert('Block User', 'Are you sure you want to block this user?', [
@@ -188,13 +148,11 @@ const ProfileScreen = () => {
         </View>
       )}
 
-      <Button title="Report Issue" onPress={sendEmail} />
-
-      {/* <TouchableOpacity
-        style={styles.deleteButton}
-        onPress={() => deleteAccount(userId)}>
-        <Text style={styles.deleteButtonText}>Delete Account</Text>
-      </TouchableOpacity> */}
+      <Button
+        style={styles.reportIssue}
+        title="Report Issue"
+        onPress={sendEmail}
+      />
     </ScrollView>
   );
 };
@@ -246,17 +204,5 @@ const styles = StyleSheet.create({
     color: 'gray',
     marginTop: 10,
   },
-  // deleteButton: {
-  //   backgroundColor: '#ff0000',
-  //   paddingVertical: 10,
-  //   paddingHorizontal: 20,
-  //   borderRadius: 5,
-  //   marginTop: 10,
-  //   marginBottom: 200,
-  //   alignSelf: 'center',
-  // },
-  // deleteButtonText: {
-  //   color: '#ffffff',
-  //   fontWeight: 'bold',
-  // },
+  reportIssue: {marginBottom: 200},
 });
