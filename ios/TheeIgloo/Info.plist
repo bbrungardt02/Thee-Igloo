@@ -91,20 +91,5 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
-	<key>NSPrivacyAccessedAPITypes</key>
-	<array>
-    	<dict>
-        	<key>NSPrivacyAccessedAPICategoryFileTimestamp</key>
-        	<string>App requires access to file timestamps for DDA9.1.</string>
-    	</dict>
-    	<dict>
-        	<key>NSPrivacyAccessedAPICategorySystemBootTime</key>
-        	<string>App requires access to the system boot time for 35F9.1.</string>
-    	</dict>
-    	<dict>
-        	<key>NSPrivacyAccessedAPICategoryUserDefaults</key>
-        	<string>App requires access to user defaults for CA92.1.</string>
-    	</dict>
-	</array>
 </dict>
 </plist>

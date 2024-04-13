@@ -13,6 +13,7 @@
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		1C3EA5852BBE8A6A001DAD9E /* CustomVibration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C3EA5842BBE8A6A001DAD9E /* CustomVibration.swift */; };
 		1C3EA5892BBE955D001DAD9E /* CustomVibration.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C3EA5882BBE955D001DAD9E /* CustomVibration.m */; };
+		1C6BD1BA2BCA5083004E8448 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 1C6BD1B92BCA5083004E8448 /* PrivacyInfo.xcprivacy */; };
 		1C8E96572B66417200C41A03 /* Fonts in Resources */ = {isa = PBXBuildFile; fileRef = 1C8E96562B66417200C41A03 /* Fonts */; };
 		58DEED608BE2EE9ED91D7C47 /* libPods-TheeIgloo-TheeIglooTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EEA72BB9F3BE07362CE60362 /* libPods-TheeIgloo-TheeIglooTests.a */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
@@ -43,6 +44,7 @@
 		1C3EA5842BBE8A6A001DAD9E /* CustomVibration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomVibration.swift; sourceTree = "<group>"; };
 		1C3EA5882BBE955D001DAD9E /* CustomVibration.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CustomVibration.m; sourceTree = "<group>"; };
 		1C4105602B6B6ED100B6441C /* TheeIgloo.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = TheeIgloo.entitlements; path = TheeIgloo/TheeIgloo.entitlements; sourceTree = "<group>"; };
+		1C6BD1B92BCA5083004E8448 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		1C8E96562B66417200C41A03 /* Fonts */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Fonts; sourceTree = "<group>"; };
 		2E4F01C089AEE2C6497624CE /* Pods-TheeIgloo-TheeIglooTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TheeIgloo-TheeIglooTests.release.xcconfig"; path = "Target Support Files/Pods-TheeIgloo-TheeIglooTests/Pods-TheeIgloo-TheeIglooTests.release.xcconfig"; sourceTree = "<group>"; };
 		56682D1B0A54C1AFDB500DF4 /* Pods-TheeIgloo.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TheeIgloo.release.xcconfig"; path = "Target Support Files/Pods-TheeIgloo/Pods-TheeIgloo.release.xcconfig"; sourceTree = "<group>"; };
@@ -104,6 +106,7 @@
 				1C3EA5842BBE8A6A001DAD9E /* CustomVibration.swift */,
 				1C3EA5832BBE8A6A001DAD9E /* TheeIgloo-Bridging-Header.h */,
 				1C3EA5882BBE955D001DAD9E /* CustomVibration.m */,
+				1C6BD1B92BCA5083004E8448 /* PrivacyInfo.xcprivacy */,
 			);
 			name = TheeIgloo;
 			sourceTree = "<group>";
@@ -256,6 +259,7 @@
 			files = (
 				1C8E96572B66417200C41A03 /* Fonts in Resources */,
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
+				1C6BD1BA2BCA5083004E8448 /* PrivacyInfo.xcprivacy in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -602,17 +606,13 @@
 				);
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
-				OTHER_CFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_CFLAGS = "$(inherited)  ";
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
 					"-DFOLLY_NO_CONFIG",
 					"-DFOLLY_MOBILE=1",
 					"-DFOLLY_USE_LIBCPP=1",
 					"-DFOLLY_CFG_NO_COROUTINES=1",
-					" ",
 				);
 				OTHER_LDFLAGS = "$(inherited)";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
@@ -674,17 +674,13 @@
 					"\"$(inherited)\"",
 				);
 				MTL_ENABLE_DEBUG_INFO = NO;
-				OTHER_CFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_CFLAGS = "$(inherited)  ";
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
 					"-DFOLLY_NO_CONFIG",
 					"-DFOLLY_MOBILE=1",
 					"-DFOLLY_USE_LIBCPP=1",
 					"-DFOLLY_CFG_NO_COROUTINES=1",
-					" ",
 				);
 				OTHER_LDFLAGS = "$(inherited)";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
